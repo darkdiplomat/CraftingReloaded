@@ -374,28 +374,32 @@ public class CRData {
 	}
 	
 	private void populateEXPTable(){
+		int xp;
 		for(int i = 1; i < maxlevel; i++){
-			building[i] = ETP.getInt("Building"+i);
-			xploadednull("Building", i, building[i]);
-			combat[i] = ETP.getInt("Combat"+i);
-			xploadednull("Combat", i, combat[i]);
-			excavating[i] = ETP.getInt("Excavating"+i);
-			xploadednull("Excavating", i, excavating[i]);
-			farming[i] = ETP.getInt("Farming"+i);
-			xploadednull("farming", i, farming[i]);
-			mining[i] = ETP.getInt("Mining"+i);
-			xploadednull("Mining", i, mining[i]);
-			technician[i] = ETP.getInt("Technician"+i);
-			xploadednull("Technician", i, technician[i]);
-			woodcutting[i] = ETP.getInt("WoodCutting"+i);
-			xploadednull("WoodCutting", i, woodcutting[i]);
+			xp = xploadednull("Building", i, ETP.getInt("Building"+i));
+			building[i] = xp;
+			xp = xploadednull("Combat", i, ETP.getInt("Combat"+i));
+			combat[i] = xp;
+			xp = xploadednull("Excavating", i, ETP.getInt("Excavating"+i));
+			excavating[i] = xp;
+			xploadednull("farming", i, ETP.getInt("Farming"+i));
+			farming[i] = xp;
+			xploadednull("Mining", i, ETP.getInt("Mining"+i));
+			mining[i] = xp;
+			xploadednull("Technician", i, ETP.getInt("Technician"+i));
+			technician[i] = xp;
+			xploadednull("WoodCutting", i, ETP.getInt("WoodCutting"+i));
+			woodcutting[i] = xp;
 		}
 	}
 	
-	private void xploadednull(String Skill, int lvl, int xp){
-		if(xp == 0){
-			log.warning("[CraftingReloaded] Loaded 0 XP for "+Skill+lvl);
+	private int xploadednull(String Skill, int lvl, int xp){
+		int newxp = xp;
+		if(xp <= 0){
+			log.warning("[CraftingReloaded] Loaded 0 for XP To: "+Skill+lvl);
+			newxp = 0;
 		}
+		return newxp;
 	}
 	
 	private void populateBuildBlocks(){
@@ -823,21 +827,26 @@ public class CRData {
 	}
 	
 	public void addExp(String Type, Player player, int expgain){
+		boolean levelup = false;
 		if (Type.equals("B")){
 			int[] el = PBuild.get(player.getName());
 			int lvl = (int)el[0];
 			int exp = el[1] + expgain;
 			int level = building[(lvl+1)];
-			log.info(String.valueOf(level));
 			while ((exp >= level) && (lvl < maxlevel)){
-				if(level == 0) break;
+				if(level <= 0){ break; }
 				lvl ++;
 				level = building[(lvl+1)];
+				levelup = true;
+			}
+			if(levelup){
 				player.sendMessage("§bLEVEL UP! §6Building Level:§e "+lvl);
 			}
 			el[0] = lvl;
 			el[1] = exp;
+			PBuild.remove(player.getName());
 			PBuild.put(player.getName(), el);
+			return;
 		}
 		else if (Type.equals("C")){
 			int[] el = PComb.get(player.getName());
@@ -845,14 +854,19 @@ public class CRData {
 			int exp = el[1] + expgain;
 			int level = combat[(lvl+1)];
 			while ((exp >= level) && (lvl < maxlevel)){
-				if(level == 0) break;
+				if(level <= 0){ break; }
 				lvl ++;
 				level = combat[(lvl+1)];
-				player.sendMessage("§bLEVEL UP! §6Combat Level:§e "+lvl);
+				levelup = true;
+			}
+			if(levelup){
+				player.sendMessage("§bLEVEL UP! §6Building Level:§e "+lvl);
 			}
 			el[0] = lvl;
 			el[1] = exp;
+			PComb.remove(player.getName());
 			PComb.put(player.getName(), el);
+			return;
 		}
 		else if (Type.equals("E")){
 			int[] el = PExc.get(player.getName());
@@ -860,14 +874,19 @@ public class CRData {
 			int exp = el[1] + expgain;
 			int level = excavating[(lvl+1)];
 			while ((exp >= level) && (lvl < maxlevel)){
-				if(level == 0) break;
+				if(level <= 0){ break; }
 				lvl++;
 				level = excavating[(lvl+1)];
-				player.sendMessage("§bLEVEL UP! §6Excavating Level:§e "+lvl);
+				levelup = true;
+			}
+			if(levelup){
+				player.sendMessage("§bLEVEL UP! §6Building Level:§e "+lvl);
 			}
 			el[0] = lvl;
 			el[1] = exp;
+			PExc.remove(player.getName());
 			PExc.put(player.getName(), el);
+			return;
 		}
 		else if (Type.equals("F")){
 			int[] el = PFarm.get(player.getName());
@@ -875,33 +894,40 @@ public class CRData {
 			int exp = el[1] + expgain;
 			int level = farming[(lvl+1)];
 			while ((exp >= level) && (lvl < maxlevel)){
-				if(level == 0) break;
+				if(level <= 0){ break; }
 				lvl++;
 				level = farming[(lvl+1)];
-				player.sendMessage("§bLEVEL UP! §6Farming Level:§e "+lvl);
+				levelup = true;
+			}
+			if(levelup){
+				player.sendMessage("§bLEVEL UP! §6Building Level:§e "+lvl);
 			}
 			el[0] = lvl;
 			el[1] = exp;
+			PFarm.remove(player.getName());
 			PFarm.put(player.getName(), el);
+			return;
 		}
 		else if (Type.equals("M")){
 			int[] el = PMine.get(player.getName());
 			int lvl = (int)el[0];
 			int exp = el[1] + expgain;
 			int level = mining[(lvl+1)];
-			log.info(String.valueOf(level));
-			log.info(String.valueOf(exp));
 			while ((exp >= level) && (lvl < maxlevel)){
-				if(level == 0) break;
+				if(level <= 0){ break; }
 				lvl ++;
 				level = mining[(lvl+1)];
 				log.info(String.valueOf(mining[(lvl+1)]));
-				player.sendMessage("§bLEVEL UP! §6Mining Level:§e "+lvl);
+				levelup = true;
+			}
+			if(levelup){
+				player.sendMessage("§bLEVEL UP! §6Building Level:§e "+lvl);
 			}
 			el[0] = lvl;
 			el[1] = exp;
-			log.info(String.valueOf(el[0])+" "+String.valueOf(el[1]));
+			PMine.remove(player.getName());
 			PMine.put(player.getName(), el);
+			return;
 		}
 		else if (Type.equals("T")){
 			int[] el = PTech.get(player.getName());
@@ -909,14 +935,19 @@ public class CRData {
 			int exp = el[1] + expgain;
 			int level = technician[(lvl+1)];
 			while ((exp >= level) && (lvl < maxlevel)){
-				if(level == 0) break;
+				if(level <= 0){ break; }
 				lvl ++;
 				level = technician[(lvl+1)];
-				player.sendMessage("§bLEVEL UP! §6Technician Level:§e "+lvl);
+				levelup = true;
+			}
+			if(levelup){
+				player.sendMessage("§bLEVEL UP! §6Building Level:§e "+lvl);
 			}
 			el[0] = lvl;
 			el[1] = exp;
+			PTech.remove(player.getName());
 			PTech.put(player.getName(), el);
+			return;
 		}
 		else if (Type.equals("W")){
 			int[] el = PWood.get(player.getName());
@@ -924,14 +955,78 @@ public class CRData {
 			int exp = el[1] + expgain;
 			int level = woodcutting[(lvl+1)];
 			while ((exp >= level) && (lvl < maxlevel)){
-				if(level == 0) break;
+				if(level <= 0){ break; }
 				lvl ++;
 				level = woodcutting[(lvl+1)];
-				player.sendMessage("§bLEVEL UP! §6Woodcutting Level:§e "+lvl);
+				levelup = true;
+			}
+			if(levelup){
+				player.sendMessage("§bLEVEL UP! §6Building Level:§e "+lvl);
 			}
 			el[0] = lvl;
 			el[1] = exp;
+			PWood.remove(player.getName());
 			PWood.put(player.getName(), el);
+			return;
+		}
+	}
+	
+	public void SilentLevel(String player, String Type){
+		if (Type.equals("B")){
+			int[] el = PBuild.get(player);
+			int lvl = (int)el[0];
+			el[0] = lvl+1;
+			PBuild.remove(player);
+			PBuild.put(player, el);
+			return;
+		}
+		else if (Type.equals("C")){
+			int[] el = PComb.get(player);
+			int lvl = (int)el[0];
+			el[0] = lvl+1;
+			PComb.remove(player);
+			PComb.put(player, el);
+			return;
+		}
+		else if (Type.equals("E")){
+			int[] el = PExc.get(player);
+			int lvl = (int)el[0];
+			el[0] = lvl+1;
+			PExc.remove(player);
+			PExc.put(player, el);
+			return;
+		}
+		else if (Type.equals("F")){
+			int[] el = PFarm.get(player);
+			int lvl = (int)el[0];
+			el[0] = lvl+1;
+			PFarm.remove(player);
+			PFarm.put(player, el);
+			return;
+		}
+		else if (Type.equals("M")){
+			int[] el = PMine.get(player);
+			int lvl = (int)el[0];
+			el[0] = lvl+1;
+			PMine.remove(player);
+			PMine.put(player, el);
+			return;
+		}
+		else if (Type.equals("T")){
+			int[] el = PTech.get(player);
+			int lvl = (int)el[0];
+			el[0] = lvl+1;
+			PTech.remove(player);
+			PTech.put(player, el);
+			return;
+		}
+		else if (Type.equals("W")){
+			int[] el = PWood.get(player);
+			int lvl = (int)el[0];
+			el[0] = lvl+1;
+			PWood.remove(player);
+			PWood.put(player, el);
+			return;
 		}
 	}
 	

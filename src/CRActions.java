@@ -19,6 +19,10 @@ public class CRActions {
 		int lvl = el[0], xp = el[1];
 		String t = tf(type);
 		int expto = CRD.getBaseExp(type, (lvl+1)) - xp;
+		if(expto <= 0 && !(lvl == CRD.maxlevel)){
+			CRD.SilentLevel(player.getName(), type);
+			return LevelExpCheck(player, type);
+		}
 		player.sendMessage(String.format(LVLM, t, String.valueOf(lvl), String.valueOf(xp)));
 		player.sendMessage(String.format(EXPM, String.valueOf(expto)));
 		return true;

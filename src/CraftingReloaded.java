@@ -8,10 +8,10 @@ public class CraftingReloaded extends Plugin {
 	
 	public void disable() {
 		CRD.Disabler();
-		log.info("[CraftingReloaded] Version 3.0 Beta 6 Disabled!");
+		log.info("[CraftingReloaded] Version 3.0b7 Disabled!");
 	}
 	public void enable() {
-		log.info("[CraftingReloaded] Version 3.0 Beta 6 Enabled!");
+		log.info("[CraftingReloaded] Version 3.0b7 Enabled!");
 	}
 	public void initialize(){
 		CRD = new CRData();
