@@ -2,12 +2,14 @@ import java.util.ArrayList;
 
 
 public class CRListener extends PluginListener {
+	CraftingReloaded CR;
 	CRData CRD;
 	CRActions CRA;
 	ArrayList<Block> AntiBlockFarm;
 	private final PluginLoader loader = etc.getLoader();
 	
-	public CRListener(CRData CRD, CRActions CRA){
+	public CRListener(CraftingReloaded CR, CRData CRD, CRActions CRA){
+		this.CR = CR;
 		this.CRD = CRD;
 		this.CRA = CRA;
 		AntiBlockFarm = new ArrayList<Block>();
@@ -63,7 +65,10 @@ public class CRListener extends PluginListener {
 					}
 				}
 				else{
-					player.sendMessage("§6----[§3Skills§6]----");
+					player.sendMessage("§6----[§3CraftingReloaded V"+CR.version+"§6]----");
+					if(player.isAdmin() && !CR.isLatest()){
+						player.sendMessage("§6----[§3There is an update! V"+CR.CurrVer+"§6]----");
+					}
 					player.sendMessage("§a/skills building§b - displays §6BUILDING§b level and XP");
 					player.sendMessage("§a/skills combat§b - displays §6COMBAT§b level and XP");
 					player.sendMessage("§a/skills excavating§b - displays §6EXCAVATING§b level and XP");

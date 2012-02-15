@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Logger;
 
 public class CraftingReloaded extends Plugin {
@@ -5,18 +10,23 @@ public class CraftingReloaded extends Plugin {
 	CRData CRD;
 	CRActions CRA;
 	static CRListener CRL;
+	public final String version = "3.0b7";
+	public String CurrVer = "3.0b7";
 	
 	public void disable() {
 		CRD.Disabler();
-		log.info("[CraftingReloaded] Version 3.0b7 Disabled!");
+		log.info("[CraftingReloaded] Version "+version+" Disabled!");
 	}
 	public void enable() {
-		log.info("[CraftingReloaded] Version 3.0b7 Enabled!");
+		log.info("[CraftingReloaded] Version "+version+" Enabled!");
+		if(!isLatest()){
+			log.info("Realms: There is an update available! "+CurrVer);
+		}
 	}
 	public void initialize(){
 		CRD = new CRData();
 		CRA = new CRActions(CRD);
-		CRL = new CRListener(CRD, CRA);
+		CRL = new CRListener(this, CRD, CRA);
 		etc.getLoader().addListener(PluginLoader.Hook.LOGIN, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.DISCONNECT, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.COMMAND, CRL, this, PluginListener.Priority.LOW);
@@ -31,6 +41,32 @@ public class CraftingReloaded extends Plugin {
 		etc.getLoader().addListener(PluginLoader.Hook.ENTITY_RIGHTCLICKED, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.FOODLEVEL_CHANGE, CRL, this, PluginListener.Priority.LOW);
 		CRD.ReloadOnline();
-		log.info("[CraftingReloaded] Version 3.0 Beta 6 Initialized!");
+		log.info("[CraftingReloaded] Version "+version+" Initialized!");
+	}
+	
+	public boolean isLatest(){
+		String address = "http://www.visualillusionsent.net/cmod_plugins/Versions.html";
+		URL url = null;
+		try {
+			url = new URL(address);
+		} catch (MalformedURLException e) {
+			return true;
+		}
+		String[] Vpre = new String[1]; 
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new InputStreamReader(url.openStream()));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				if (inputLine.contains("CraftingReloaded=")){
+					Vpre = inputLine.split("=");
+					CurrVer = Vpre[1].replace("</p>", "");
+				}
+			}
+			in.close();
+		} catch (IOException e) {
+			return true;
+		}
+		return (version.equals(CurrVer));
 	}
 }
