@@ -9,7 +9,7 @@ public class CraftingReloaded extends Plugin {
 	Logger log = Logger.getLogger("Minecraft");
 	CRData CRD;
 	CRActions CRA;
-	static CRListener CRL;
+	CRListener CRL;
 	public final String version = "3.0b8";
 	public String CurrVer = "3.0b8";
 	
@@ -24,7 +24,7 @@ public class CraftingReloaded extends Plugin {
 		}
 	}
 	public void initialize(){
-		CRD = new CRData();
+		CRD = new CRData(this);
 		CRA = new CRActions(CRD);
 		CRL = new CRListener(this, CRD, CRA);
 		etc.getLoader().addListener(PluginLoader.Hook.LOGIN, CRL, this, PluginListener.Priority.LOW);

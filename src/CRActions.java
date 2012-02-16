@@ -1,6 +1,5 @@
 import java.util.Random;
 
-
 public class CRActions {
 	CRData CRD;
 	Random rand = new Random();
@@ -15,13 +14,12 @@ public class CRActions {
 	private final String EXPT = "[§bYour §eTOTAL §bexperience is:§2 %s §f]";
 	
 	public boolean LevelExpCheck(Player player, String type){
-		int[] el = CRD.Level(player.getName(), type);
+		int[] el = CRD.LevelXP(player.getName(), type);
 		int lvl = el[0], xp = el[1];
 		String t = tf(type);
 		int expto = CRD.getBaseExp(type, (lvl+1)) - xp;
-		if(expto <= 0 && !(lvl == CRD.maxlevel)){
-			CRD.SilentLevel(player.getName(), type);
-			return LevelExpCheck(player, type);
+		if(expto < 0){
+			expto = 0;
 		}
 		player.sendMessage(String.format(LVLM, t, String.valueOf(lvl), String.valueOf(xp)));
 		player.sendMessage(String.format(EXPM, String.valueOf(expto)));
@@ -39,7 +37,7 @@ public class CRActions {
 		String[] skills = new String[]{"B", "C", "E", "F", "M", "T", "W"};
 		for(String type : skills){
 			String t = tf(type);
-			int[] el = CRD.Level(player.getName(), type);
+			int[] el = CRD.LevelXP(player.getName(), type);
 			int lvl = el[0], xp = el[1];
 			player.sendMessage(String.format(LVLM, t, String.valueOf(lvl), String.valueOf(xp)));
 		}
@@ -268,7 +266,7 @@ public class CRActions {
 		return false;
 	}
 	
-	public boolean farm(Player player, int ID){
+	public boolean farm(Player player, int ID){ //TODO Farm Bonuses?
 		int exp = CRD.getBET(ID);
 		CRD.addExp("F", player, exp);
 		return false;

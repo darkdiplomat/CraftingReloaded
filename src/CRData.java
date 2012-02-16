@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CRData {
+	private CraftingReloaded CR;
 	
 	private Logger log = Logger.getLogger("Minecraft");
 	
@@ -67,7 +68,8 @@ public class CRData {
 	
 	boolean CMySQL = false, MySQL = false;
 	
-	public CRData(){
+	public CRData(CraftingReloaded CR){
+		this.CR = CR;
 		PLVLXPT = new HashMap<String, CRPlayerLevelExperience>();
 		
 		BET = new HashMap<Integer, Integer>();
@@ -370,22 +372,45 @@ public class CRData {
 			combat[i] = xp;
 			xp = xploadednull("Excavating", i, ETP.getInt("Excavating"+i));
 			excavating[i] = xp;
-			xploadednull("farming", i, ETP.getInt("Farming"+i));
+			xp = xploadednull("farming", i, ETP.getInt("Farming"+i));
 			farming[i] = xp;
-			xploadednull("Mining", i, ETP.getInt("Mining"+i));
+			xp = xploadednull("Mining", i, ETP.getInt("Mining"+i));
 			mining[i] = xp;
-			xploadednull("Technician", i, ETP.getInt("Technician"+i));
+			xp = xploadednull("Technician", i, ETP.getInt("Technician"+i));
 			technician[i] = xp;
-			xploadednull("WoodCutting", i, ETP.getInt("WoodCutting"+i));
+			xp = xploadednull("WoodCutting", i, ETP.getInt("WoodCutting"+i));
 			woodcutting[i] = xp;
 		}
 	}
 	
 	private int xploadednull(String Skill, int lvl, int xp){
 		int newxp = xp;
+		int oldlvl = lvl-1;
 		if(xp <= 0){
 			log.warning("[CraftingReloaded] Loaded 0 for XP To: "+Skill+lvl);
-			newxp = 0;
+			log.warning("[CraftingReloaded] Reseting to 150+ last loaded XP for Skill:"+Skill);
+			if(Skill.equals("Building")){
+				xp = building[oldlvl];
+			}
+			else if(Skill.equals("Combat")){
+				xp = combat[oldlvl];
+			}
+			else if(Skill.equals("Excavating")){
+				xp = excavating[oldlvl];
+			}
+			else if(Skill.equals("Farming")){
+				xp = farming[oldlvl];
+			}
+			else if(Skill.equals("Mining")){
+				xp = mining[oldlvl];
+			}
+			else if(Skill.equals("Technician")){
+				xp = technician[oldlvl];
+			}
+			else if(Skill.equals("WoodCutting")){
+				xp = woodcutting[oldlvl];
+			}
+			newxp += 150;
 		}
 		return newxp;
 	}
@@ -796,28 +821,32 @@ public class CRData {
 	}
 	
 	public int getBaseExp(String type, int L){
+		int xp = 0;
 		if(type.equals("B")){
-			return building[L];
+			xp = building[L];
 		}
 		else if(type.equals("C")){
-			return combat[L];
+			xp = combat[L];
 		}
 		else if(type.equals("E")){
-			return excavating[L];
+			xp = excavating[L];
 		}
 		else if(type.equals("F")){
-			return farming[L];
+			xp = farming[L];
 		}
 		else if(type.equals("M")){
-			return mining[L];
+			xp = mining[L];
 		}
 		else if(type.equals("T")){
-			return technician[L];
+			xp = technician[L];
 		}
 		else if(type.equals("W")){
-			return woodcutting[L];
+			xp = woodcutting[L];
 		}
-		return 0;
+		if(xp <= 0){
+			log.warning("[CraftingReloaded] - Let DarkDiplomat know you had an error at getBaseExp(L:823) For Skill: "+type+" Level: "+L);
+		}
+		return xp;
 	}
 	
 	public void addExp(String Type, Player player, int expgain){
@@ -998,25 +1027,25 @@ public class CRData {
 	public boolean Maxed(String player, String Type){
 		CRPlayerLevelExperience PLXP = PLVLXPT.get(player);
 		if(Type.equals("B")){
-			return PLXP.getBLVL() > maxlevel;
+			return PLXP.getBLVL() >= maxlevel;
 		}
 		else if(Type.equals("C")){
-			return PLXP.getCLVL() > maxlevel;
+			return PLXP.getCLVL() >= maxlevel;
 		}
 		else if(Type.equals("E")){
-			return PLXP.getELVL() > maxlevel;
+			return PLXP.getELVL() >= maxlevel;
 		}
 		else if(Type.equals("F")){
-			return PLXP.getFLVL() > maxlevel;
+			return PLXP.getFLVL() >= maxlevel;
 		}
 		else if(Type.equals("M")){
-			return PLXP.getMLVL() > maxlevel;
+			return PLXP.getMLVL() >= maxlevel;
 		}
 		else if(Type.equals("T")){
-			return PLXP.getTLVL() > maxlevel;
+			return PLXP.getTLVL() >= maxlevel;
 		}
 		else if(Type.equals("W")){
-			return PLXP.getWLVL() > maxlevel;
+			return PLXP.getWLVL() >= maxlevel;
 		}
 		return false;	
 	}
@@ -1192,7 +1221,7 @@ public class CRData {
 		return total;
 	}
 	
-	public int[] Level(String name, String type){
+	public int[] LevelXP(String name, String type){
 		int[] el = new int[2];
 		if(type.equals("C")){
 			el[0] += getLevel(name, "B"); el[1] += getXP(name, "B");
@@ -1266,7 +1295,7 @@ public class CRData {
 		if(MySQL){
 			Connection conn = getMySQLConn();
     		try{
-    			PreparedStatement ps = conn.prepareStatement("INSERT INTO CraftingReloaded (Player,BLVL,BEXP,CLVL,CEXP,ELVL,EEXP,FLVL,FEXP,MLVL,MEXP,TLVL,TEXP,WLVL,WEXP) Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 1);
+    			PreparedStatement ps = conn.prepareStatement("INSERT INTO CraftingReloaded (Player,BLVL,BEXP,CLVL,CEXP,ELVL,EEXP,FLVL,FEXP,MLVL,MEXP,TLVL,TEXP,WLVL,WEXP) Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
     			ps.setString(1, name);
     			ps.setInt(2, 0);
     			ps.setInt(3, 0);
@@ -1312,9 +1341,13 @@ public class CRData {
 	public void ReloadOnline(){
 		ArrayList<Player> pload = new ArrayList<Player>();
 		pload.addAll(etc.getServer().getPlayerList());
-		for(int i = 0; i < pload.size(); i++){
-			Player player = pload.get(i);
-			loadEXP(player.getName());
+		for(Player player : pload){
+			if(keyExists(player.getName())){
+				loadEXP(player.getName());
+			}
+			else{
+				setInitialEXP(player.getName());
+			}
 		}
 	}
 	
@@ -1392,7 +1425,7 @@ public class CRData {
 			Connection conn = getMySQLConn();
 			PreparedStatement ps = null;
 			try{
-				ps = conn.prepareStatement("UPDATE CraftingReloaded SET BLVL = ?, BEXP = ?, CLVL = ?, CEXP = ?, ELVL = ?, EEXP = ?, FLVL = ?, FEXP = ?, MLVL = ?, MEXP = ?, TLVL = ?, TEXP = ?, WLVL = ?, WEXP = ? WHERE Player = ? LIMIT 1");
+				ps = conn.prepareStatement("UPDATE CraftingReloaded SET BLVL = ?, BEXP = ?, CLVL = ?, CEXP = ?, ELVL = ?, EEXP = ?, FLVL = ?, FEXP = ?, MLVL = ?, MEXP = ?, TLVL = ?, TEXP = ?, WLVL = ?, WEXP = ? WHERE Player = ?");
 				ps.setInt(1, blvl);
 				ps.setInt(2, bexp);
 				ps.setInt(3, clvl);
@@ -1436,9 +1469,59 @@ public class CRData {
 	public void SaveAll(){
 		etc.getServer().messageAll("[§5SKILLS§f]§d - Saving all LEVELS and EXPERIENCE!");
 		log.info("[CraftingReloaded] - Saving all LEVELS and EXPERIENCE!");
-		for(String key : PLVLXPT.keySet()){
-			SaveSingle(key); //TODO BatchSave!
-		}
+		CRPlayerLevelExperience PLXP;
+			if(MySQL){
+				Connection conn = getMySQLConn();
+				PreparedStatement ps = null;
+				try{
+					ps = conn.prepareStatement("UPDATE CraftingReloaded SET BLVL = ?, BEXP = ?, CLVL = ?, CEXP = ?, ELVL = ?, EEXP = ?, FLVL = ?, FEXP = ?, MLVL = ?, MEXP = ?, TLVL = ?, TEXP = ?, WLVL = ?, WEXP = ? WHERE Player = ?");
+					for(String key : PLVLXPT.keySet()){
+						PLXP = PLVLXPT.get(key);
+						
+						ps.setInt(1, PLXP.getBLVL());
+						ps.setInt(2, PLXP.getBXP());
+						ps.setInt(3, PLXP.getCLVL());
+						ps.setInt(4, PLXP.getCXP());
+						ps.setInt(5, PLXP.getELVL());
+						ps.setInt(6, PLXP.getEXP());
+						ps.setInt(7, PLXP.getFLVL());
+						ps.setInt(8, PLXP.getFXP());
+						ps.setInt(9, PLXP.getMLVL());
+						ps.setInt(10, PLXP.getMXP());
+						ps.setInt(11, PLXP.getTLVL());
+						ps.setInt(12, PLXP.getTXP());
+						ps.setInt(13, PLXP.getWLVL());
+						ps.setInt(14, PLXP.getWXP());
+						ps.setString(15, key);
+						ps.addBatch();
+					}
+					ps.executeBatch();
+				} catch (SQLException ex) {
+					log.warning("[CraftingReloaded] - Unable to update data!");
+				}finally{
+					try{
+						if (conn != null){
+							conn.close();
+						}
+					}catch (SQLException sqle) {
+						log.warning("[CraftingReloaded] - Could not close connection to SQL");
+					}
+				}
+			}
+			else{
+				for(String key : PLVLXPT.keySet()){
+					PELP = new PropertiesFile(PDir+key+PEL);
+					PLXP = PLVLXPT.get(key);
+					
+					PELP.setInt("BLVL", PLXP.getBLVL()); PELP.setInt("BEXP", PLXP.getBXP());
+					PELP.setInt("CLVL", PLXP.getCLVL()); PELP.setInt("CEXP", PLXP.getCXP());
+					PELP.setInt("ELVL", PLXP.getELVL()); PELP.setInt("EEXP", PLXP.getEXP());
+					PELP.setInt("FLVL", PLXP.getFLVL()); PELP.setInt("FEXP", PLXP.getFXP());
+					PELP.setInt("MLVL", PLXP.getMLVL()); PELP.setInt("MEXP", PLXP.getMXP());
+					PELP.setInt("TLVL", PLXP.getTLVL()); PELP.setInt("TEXP", PLXP.getTXP());
+					PELP.setInt("WLVL", PLXP.getWLVL()); PELP.setInt("WEXP", PLXP.getWXP());
+				}
+			}
 		UpdateAntiBlockFarm();
 		etc.getServer().messageAll("[§5SKILLS§f]§d - Save Complete!");
 		log.info("[CraftingReloaded] - Save Complete!");
@@ -1465,7 +1548,7 @@ public class CRData {
 	}
 	
 	public void UpdateAntiBlockFarm(){
-		CRL = CraftingReloaded.CRL;
+		CRL = CR.CRL;
 		AntiBlockFarm.clear();
 		AntiBlockFarm.addAll(CRL.AntiBlockFarm);
 		if(MySQL){

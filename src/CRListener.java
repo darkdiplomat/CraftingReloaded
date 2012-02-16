@@ -77,7 +77,7 @@ public class CRListener extends PluginListener {
 					player.sendMessage("§a/skills technician§b - displays §6TECHNICIAN§b level and XP");
 					player.sendMessage("§a/skills woodcutting§b - displays §6WOODCUTTING§b level and XP");
 					player.sendMessage("§a/skills all§b - displays §6ALL§b levels and XP");
-					player.sendMessage("§a/skills total§b - displays §TOTAL§b level and XP");
+					player.sendMessage("§a/skills total§b - displays §6TOTAL§b level and XP");
 					player.sendMessage("§6Aliases: b, c, e, f, m, t, w");
 					return true;
 				}
