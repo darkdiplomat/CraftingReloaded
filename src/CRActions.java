@@ -31,7 +31,7 @@ public class CRActions {
 	public boolean TotalLevelExpCheck(Player player){
 		int[] total = CRD.TotalEL(player.getName());
 		player.sendMessage(String.format(LVLT, String.valueOf(total[0])));
-		player.sendMessage(String.format(EXPT, String.valueOf(total[0])));
+		player.sendMessage(String.format(EXPT, String.valueOf(total[1])));
 		return true;
 	}
 	

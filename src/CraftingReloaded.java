@@ -10,8 +10,8 @@ public class CraftingReloaded extends Plugin {
 	CRData CRD;
 	CRActions CRA;
 	static CRListener CRL;
-	public final String version = "3.0b7";
-	public String CurrVer = "3.0b7";
+	public final String version = "3.0b8";
+	public String CurrVer = "3.0b8";
 	
 	public void disable() {
 		CRD.Disabler();

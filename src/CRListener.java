@@ -28,7 +28,7 @@ public class CRListener extends PluginListener {
 	
 	public void onDisconnect(Player player){
 		if(player.canUseCommand("/skills")){
-			CRD.SaveSingle(player);
+			CRD.SaveSingle(player.getName());
 		}
 	}
 	
