@@ -390,25 +390,25 @@ public class CRData {
 			log.warning("[CraftingReloaded] Loaded 0 for XP To: "+Skill+lvl);
 			log.warning("[CraftingReloaded] Reseting to 150+ last loaded XP for Skill:"+Skill);
 			if(Skill.equals("Building")){
-				xp = building[oldlvl];
+				newxp = building[oldlvl];
 			}
 			else if(Skill.equals("Combat")){
-				xp = combat[oldlvl];
+				newxp = combat[oldlvl];
 			}
 			else if(Skill.equals("Excavating")){
-				xp = excavating[oldlvl];
+				newxp = excavating[oldlvl];
 			}
 			else if(Skill.equals("Farming")){
-				xp = farming[oldlvl];
+				newxp = farming[oldlvl];
 			}
 			else if(Skill.equals("Mining")){
-				xp = mining[oldlvl];
+				newxp = mining[oldlvl];
 			}
 			else if(Skill.equals("Technician")){
-				xp = technician[oldlvl];
+				newxp = technician[oldlvl];
 			}
 			else if(Skill.equals("WoodCutting")){
-				xp = woodcutting[oldlvl];
+				newxp = woodcutting[oldlvl];
 			}
 			newxp += 150;
 		}
