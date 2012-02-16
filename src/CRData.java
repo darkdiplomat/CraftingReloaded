@@ -93,8 +93,8 @@ public class CRData {
 	}
 	
 	private void loadSettings(){
-		setSettings();
 		makeDir();
+		setSettings();
 		ETP = new PropertiesFile((Dir+EL));
 		populateBuildBlocks();
 		populateFarmBlocks();
