@@ -61,8 +61,8 @@ public class CRData {
 	private Timer SaveIt;
 	
 	private CRListener CRL;
-	
-	private int[] building, combat, excavating, farming, mining, technician, woodcutting;
+
+	private long[] building, combat, excavating, farming, mining, technician, woodcutting;
 	int maxlevel = 100, savedelay = 15, BPILR = 5, B1LVL = 5, B2LVL = 15, B3LVL = 25, B4LVL = 35, B5LVL = 45;
 	double B1PS = 0.005, B2PS = 0.005, B3PS = 0.005, B4PS = 0.005, B5PS = 0.005, B1PI = 0.005, B2PI = 0.005, B3PI = 0.005, B4PI = 0.005, B5PI = 0.005;
 	
@@ -90,6 +90,8 @@ public class CRData {
 		SaveIt = new Timer();
 		
 		loadSettings();
+		
+		
 	}
 	
 	private void loadSettings(){
@@ -139,35 +141,43 @@ public class CRData {
 	
 	private void makeEXPFile(){
 		try {
+			long xp = 0, i;
 			BufferedWriter out = new BufferedWriter(new FileWriter(Dir+EL));
 			out.write("#CraftingReloaded Experience File#"); out.newLine();
 			out.write("#Building EXP#"); out.newLine();
-			for(int i = 1; i < maxlevel; i++){
-				out.write("Building"+i+"="+(i*150)); out.newLine();
+			for(i = 1; i < maxlevel; i++){
+				xp = (i*150L);
+				out.write("Building"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Combat EXP#"); out.newLine();
-			for(int i = 1; i < maxlevel; i++){
-				out.write("Combat"+i+"="+(i*150)); out.newLine();
+			for(i = 1; i < maxlevel; i++){
+				xp = (i*150L);
+				out.write("Combat"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Excavating EXP#"); out.newLine();
-			for(int i = 1; i < maxlevel; i++){
-				out.write("Excavating"+i+"="+(i*150)); out.newLine();
+			for(i = 1; i < maxlevel; i++){
+				xp = (i*150L);
+				out.write("Excavating"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Farming EXP#"); out.newLine();
-			for(int i = 1; i < maxlevel; i++){
-				out.write("Farming"+i+"="+(i*150)); out.newLine();
+			for(i = 1; i < maxlevel; i++){
+				xp = (i*150L);
+				out.write("Farming"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Mining EXP#"); out.newLine();
-			for(int i = 1; i < maxlevel; i++){
-				out.write("Mining"+i+"="+(i*150)); out.newLine();
+			for(i = 1; i < maxlevel; i++){
+				xp = (i*150L);
+				out.write("Mining"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Technician EXP#"); out.newLine();
-			for(int i = 1; i < maxlevel; i++){
-				out.write("Technician"+i+"="+(i*150)); out.newLine();
+			for(i = 1; i < maxlevel; i++){
+				xp = (i*150L);
+				out.write("Technician"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#WoodCutting EXP#"); out.newLine();
-			for(int i = 1; i < maxlevel; i++){
-				out.write("WoodCutting"+i+"="+(i*150)); out.newLine();
+			for(i = 1; i < maxlevel; i++){
+				xp = (i*150L);
+				out.write("WoodCutting"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.close();
 		}catch (IOException e){
@@ -364,27 +374,27 @@ public class CRData {
 	}
 	
 	private void populateEXPTable(){
-		int xp;
+		long xp;
 		for(int i = 1; i < maxlevel; i++){
-			xp = xploadednull("Building", i, ETP.getInt("Building"+i));
+			xp = xploadednull("Building", i, ETP.getLong("Building"+i));
 			building[i] = xp;
-			xp = xploadednull("Combat", i, ETP.getInt("Combat"+i));
+			xp = xploadednull("Combat", i, ETP.getLong("Combat"+i));
 			combat[i] = xp;
-			xp = xploadednull("Excavating", i, ETP.getInt("Excavating"+i));
+			xp = xploadednull("Excavating", i, ETP.getLong("Excavating"+i));
 			excavating[i] = xp;
-			xp = xploadednull("farming", i, ETP.getInt("Farming"+i));
+			xp = xploadednull("farming", i, ETP.getLong("Farming"+i));
 			farming[i] = xp;
-			xp = xploadednull("Mining", i, ETP.getInt("Mining"+i));
+			xp = xploadednull("Mining", i, ETP.getLong("Mining"+i));
 			mining[i] = xp;
-			xp = xploadednull("Technician", i, ETP.getInt("Technician"+i));
+			xp = xploadednull("Technician", i, ETP.getLong("Technician"+i));
 			technician[i] = xp;
-			xp = xploadednull("WoodCutting", i, ETP.getInt("WoodCutting"+i));
+			xp = xploadednull("WoodCutting", i, ETP.getLong("WoodCutting"+i));
 			woodcutting[i] = xp;
 		}
 	}
 	
-	private int xploadednull(String Skill, int lvl, int xp){
-		int newxp = xp;
+	private long xploadednull(String Skill, int lvl, long xp){
+		long newxp = xp;
 		int oldlvl = lvl-1;
 		if(xp <= 0){
 			log.warning("[CraftingReloaded] Loaded 0 for XP To: "+Skill+lvl);
@@ -612,7 +622,7 @@ public class CRData {
 		try{
 			maxlevel = Settings.getInt("MaxLevel") + 1;
 		}catch(Exception e){
-			maxlevel = 2000000001;
+			maxlevel = 1000000000;
 		}
 		if(maxlevel <= 0){
 			log.warning("[CraftingReloaded] MaxLevel was 0 or less! Defaulting to 100!");
@@ -642,13 +652,13 @@ public class CRData {
 		B4PI = Settings.getDouble("B4PI");
 		B5PI = Settings.getDouble("B5PI");
 		
-		building = new int[(maxlevel+1)];
-		combat = new int[(maxlevel+1)];
-		excavating = new int[(maxlevel+1)];
-		farming = new int[(maxlevel+1)];
-		mining = new int[(maxlevel+1)];
-		technician = new int[(maxlevel+1)];
-		woodcutting = new int[(maxlevel+1)];
+		building = new long[(maxlevel+1)];
+		combat = new long[(maxlevel+1)];
+		excavating = new long[(maxlevel+1)];
+		farming = new long[(maxlevel+1)];
+		mining = new long[(maxlevel+1)];
+		technician = new long[(maxlevel+1)];
+		woodcutting = new long[(maxlevel+1)];
 		
 		if(MySQL && !CMySQL){
 			try {
@@ -820,8 +830,8 @@ public class CRData {
 		return 1;
 	}
 	
-	public int getBaseExp(String type, int L){
-		int xp = 0;
+	public long getBaseExp(String type, int L){
+		long xp = 0;
 		if(type.equals("B")){
 			xp = building[L];
 		}
@@ -849,11 +859,21 @@ public class CRData {
 		return xp;
 	}
 	
-	public void addExp(String Type, Player player, int expgain){
+	private CRPlayerLevelExperience getPLXP(String name){
+		if(!keyExists(name)){
+			PLVLXPT.put(name, new CRPlayerLevelExperience(name));
+		}
+		else if(!PLVLXPT.containsKey(name)){
+			loadEXP(name);
+		}
+		return PLVLXPT.get(name);
+	}
+	
+	public void addExp(String Type, Player player, long expgain){
 		boolean levelup = false;
-		int lvl, exp, lvlgain, xpcheck, levelxp;
-		CRPlayerLevelExperience PLXP = PLVLXPT.get(player.getName());
-		PLVLXPT.remove(player.getName());
+		int lvl, lvlgain, xpcheck;
+		long exp, levelxp;
+		CRPlayerLevelExperience PLXP = getPLXP(player.getName());
 		if (Type.equals("B")){
 			lvl = PLXP.getBLVL();
 			exp = PLXP.getBXP() + expgain;
@@ -998,8 +1018,7 @@ public class CRData {
 	}
 	
 	public void SilentLevel(String player, String Type){
-		CRPlayerLevelExperience PLXP = PLVLXPT.get(player);
-		PLVLXPT.remove(player);
+		CRPlayerLevelExperience PLXP = getPLXP(player);
 		if (Type.equals("B")){
 			PLXP.BAddLevel(1);
 		}
@@ -1025,7 +1044,7 @@ public class CRData {
 	}
 	
 	public boolean Maxed(String player, String Type){
-		CRPlayerLevelExperience PLXP = PLVLXPT.get(player);
+		CRPlayerLevelExperience PLXP = getPLXP(player);
 		if(Type.equals("B")){
 			return PLXP.getBLVL() >= maxlevel;
 		}
@@ -1050,9 +1069,9 @@ public class CRData {
 		return false;	
 	}
 	
-	private int getLevel(String player, String Type){
+	public int getLevel(String player, String Type){
 		int LVL = 0;
-		CRPlayerLevelExperience PLXP = PLVLXPT.get(player);
+		CRPlayerLevelExperience PLXP = getPLXP(player);
 		if(Type.equals("B")){
 			LVL = PLXP.getBLVL();
 		}
@@ -1077,9 +1096,9 @@ public class CRData {
 		return LVL;
 	}
 	
-	private int getXP(String player, String Type){
-		int XP = 0;
-		CRPlayerLevelExperience PLXP = PLVLXPT.get(player);
+	public long getXP(String player, String Type){
+		long XP = 0;
+		CRPlayerLevelExperience PLXP = getPLXP(player);
 		if(Type.equals("B")){
 			XP = PLXP.getBXP();
 		}
@@ -1102,6 +1121,30 @@ public class CRData {
 			XP = PLXP.getWXP();
 		}
 		return XP;
+	}
+	
+	public int TotalLevel(String name){
+		int total = 0;
+		total += getLevel(name, "B");
+		total += getLevel(name, "C");
+		total += getLevel(name, "E");
+		total += getLevel(name, "F");
+		total += getLevel(name, "M");
+		total += getLevel(name, "T");
+		total += getLevel(name, "W");
+		return total;
+	}
+	
+	public long TotalXP(String name){
+		long total = 0;
+		total += getXP(name, "B");
+		total += getXP(name, "C");
+		total += getXP(name, "E");
+		total += getXP(name, "F");
+		total += getXP(name, "M");
+		total += getXP(name, "T");
+		total += getXP(name, "W");
+		return total;
 	}
 	
 	public boolean Bonus1(String player, String Type){
@@ -1209,44 +1252,6 @@ public class CRData {
 		return false;
 	}
 	
-	public int[] TotalEL(String name){
-		int[] total = new int[]{0, 0};
-		total[0] += getLevel(name, "B"); total[1] += getXP(name, "B");
-		total[0] += getLevel(name, "C"); total[1] += getXP(name, "C");
-		total[0] += getLevel(name, "E"); total[1] += getXP(name, "E");
-		total[0] += getLevel(name, "F"); total[1] += getXP(name, "F");
-		total[0] += getLevel(name, "M"); total[1] += getXP(name, "M");
-		total[0] += getLevel(name, "T"); total[1] += getXP(name, "T");
-		total[0] += getLevel(name, "W"); total[1] += getXP(name, "W");
-		return total;
-	}
-	
-	public int[] LevelXP(String name, String type){
-		int[] el = new int[2];
-		if(type.equals("C")){
-			el[0] += getLevel(name, "B"); el[1] += getXP(name, "B");
-		}
-		else if(type.equals("B")){
-			el[0] += getLevel(name, "C"); el[1] += getXP(name, "C");
-		}
-		else if(type.equals("E")){
-			el[0] += getLevel(name, "E"); el[1] += getXP(name, "E");
-		}
-		else if(type.equals("F")){
-			el[0] += getLevel(name, "F"); el[1] += getXP(name, "F");
-		}
-		else if(type.equals("M")){
-			el[0] += getLevel(name, "M"); el[1] += getXP(name, "M");
-		}
-		else if(type.equals("T")){
-			el[0] += getLevel(name, "T"); el[1] += getXP(name, "T");
-		}
-		else if(type.equals("W")){
-			el[0] += getLevel(name, "W"); el[1] += getXP(name, "W");
-		}
-		return el;
-	}
-	
 	private Connection getMySQLConn(){
 		Connection conn = null;
 		if(CMySQL){
@@ -1298,19 +1303,19 @@ public class CRData {
     			PreparedStatement ps = conn.prepareStatement("INSERT INTO CraftingReloaded (Player,BLVL,BEXP,CLVL,CEXP,ELVL,EEXP,FLVL,FEXP,MLVL,MEXP,TLVL,TEXP,WLVL,WEXP) Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
     			ps.setString(1, name);
     			ps.setInt(2, 0);
-    			ps.setInt(3, 0);
+    			ps.setLong(3, 0);
     			ps.setInt(4, 0);
-    			ps.setInt(5, 0);
+    			ps.setLong(5, 0);
     			ps.setInt(6, 0);
-    			ps.setInt(7, 0);
+    			ps.setLong(7, 0);
     			ps.setInt(8, 0);
-    			ps.setInt(9, 0);
+    			ps.setLong(9, 0);
     			ps.setInt(10, 0);
-    			ps.setInt(11, 0);
+    			ps.setLong(11, 0);
     			ps.setInt(12, 0);
-    			ps.setInt(13, 0);
+    			ps.setLong(13, 0);
     			ps.setInt(14, 0);
-    			ps.setInt(15, 0);
+    			ps.setLong(15, 0);
     			ps.executeUpdate();
     		} catch (SQLException ex) {
     			log.severe("[CraftingReloaded] - Unable to save data for "+name+" to CraftingReloaded!");
@@ -1326,13 +1331,13 @@ public class CRData {
 		}
 		else{
 			PELP = new PropertiesFile(PDir+name+PEL);
-			PELP.setInt("BLVL", 0); PELP.setInt("BEXP", 0);
-			PELP.setInt("CLVL", 0); PELP.setInt("CEXP", 0);
-			PELP.setInt("ELVL", 0); PELP.setInt("EEXP", 0);
-			PELP.setInt("FLVL", 0); PELP.setInt("FEXP", 0);
-			PELP.setInt("MLVL", 0); PELP.setInt("MEXP", 0);
-			PELP.setInt("TLVL", 0); PELP.setInt("TEXP", 0);
-			PELP.setInt("WLVL", 0); PELP.setInt("WEXP", 0);
+			PELP.setInt("BLVL", 0); PELP.setLong("BEXP", 0);
+			PELP.setInt("CLVL", 0); PELP.setLong("CEXP", 0);
+			PELP.setInt("ELVL", 0); PELP.setLong("EEXP", 0);
+			PELP.setInt("FLVL", 0); PELP.setLong("FEXP", 0);
+			PELP.setInt("MLVL", 0); PELP.setLong("MEXP", 0);
+			PELP.setInt("TLVL", 0); PELP.setLong("TEXP", 0);
+			PELP.setInt("WLVL", 0); PELP.setLong("WEXP", 0);
 		}
 		CRPlayerLevelExperience PLXP = new CRPlayerLevelExperience(name);
 		PLVLXPT.put(name, PLXP);
@@ -1342,18 +1347,21 @@ public class CRData {
 		ArrayList<Player> pload = new ArrayList<Player>();
 		pload.addAll(etc.getServer().getPlayerList());
 		for(Player player : pload){
-			if(keyExists(player.getName())){
-				loadEXP(player.getName());
-			}
-			else{
-				setInitialEXP(player.getName());
+			if(player.canUseCommand("/skills")){
+				if(keyExists(player.getName())){
+					loadEXP(player.getName());
+				}
+				else{
+					setInitialEXP(player.getName());
+				}
 			}
 		}
 	}
 	
 	public void loadEXP(String name){
 		CRPlayerLevelExperience PLXP;
-		int blvl = 0, bexp = 0, clvl = 0, cexp = 0, elvl = 0, eexp = 0, flvl = 0, fexp = 0, mlvl = 0, mexp = 0, tlvl = 0, texp = 0, wlvl = 0, wexp = 0;
+		int blvl = 0, clvl = 0, elvl = 0, flvl = 0, mlvl = 0, tlvl = 0, wlvl = 0;
+		long bexp = 0, cexp = 0, eexp = 0, fexp = 0,  mexp = 0, texp = 0, wexp = 0;
 		if(MySQL){
 			Connection conn = getMySQLConn();
     		try{
@@ -1362,19 +1370,19 @@ public class CRData {
     			ResultSet rs = ps.executeQuery();
     			if(rs.next()){
     				blvl = rs.getInt("BLVL");
-    				bexp = rs.getInt("BEXP");
+    				bexp = rs.getLong("BEXP");
     				clvl = rs.getInt("CLVL");
-    				cexp = rs.getInt("CEXP");
+    				cexp = rs.getLong("CEXP");
     				elvl = rs.getInt("ELVL");
-    				eexp = rs.getInt("EEXP");
+    				eexp = rs.getLong("EEXP");
     				flvl = rs.getInt("FLVL");
-    				fexp = rs.getInt("FEXP");
+    				fexp = rs.getLong("FEXP");
     				mlvl = rs.getInt("MLVL");
-    				mexp = rs.getInt("MEXP");
+    				mexp = rs.getLong("MEXP");
     				tlvl = rs.getInt("TLVL");
-    				texp = rs.getInt("TEXP");
+    				texp = rs.getLong("TEXP");
     				wlvl = rs.getInt("WLVL");
-    				wexp = rs.getInt("WEXP");
+    				wexp = rs.getLong("WEXP");
     			}
     		} catch (SQLException ex) {
     			log.severe("[CraftingReloaded] - Unable to load data for "+name);
@@ -1390,13 +1398,13 @@ public class CRData {
 		}
 		else{
 			PELP = new PropertiesFile(PDir+name+PEL);
-			blvl = PELP.getInt("BLVL"); bexp = PELP.getInt("BEXP");
-			clvl = PELP.getInt("CLVL"); cexp = PELP.getInt("CEXP");
-			elvl = PELP.getInt("ELVL"); eexp = PELP.getInt("EEXP");
-			flvl = PELP.getInt("FLVL"); fexp = PELP.getInt("FEXP");
-			mlvl = PELP.getInt("MLVL"); mexp = PELP.getInt("MEXP");
-			tlvl = PELP.getInt("TLVL"); texp = PELP.getInt("TEXP");
-			wlvl = PELP.getInt("WLVL"); wexp = PELP.getInt("WEXP");
+			blvl = PELP.getInt("BLVL"); bexp = PELP.getLong("BEXP");
+			clvl = PELP.getInt("CLVL"); cexp = PELP.getLong("CEXP");
+			elvl = PELP.getInt("ELVL"); eexp = PELP.getLong("EEXP");
+			flvl = PELP.getInt("FLVL"); fexp = PELP.getLong("FEXP");
+			mlvl = PELP.getInt("MLVL"); mexp = PELP.getLong("MEXP");
+			tlvl = PELP.getInt("TLVL"); texp = PELP.getLong("TEXP");
+			wlvl = PELP.getInt("WLVL"); wexp = PELP.getLong("WEXP");
 		}
 		
 		PLXP = new CRPlayerLevelExperience(name);
@@ -1411,15 +1419,23 @@ public class CRData {
 	}
 	
 	public void SaveSingle(String player){
-		CRPlayerLevelExperience PLXP = PLVLXPT.get(player);
+		CRPlayerLevelExperience PLXP = getPLXP(player);
 		PLVLXPT.remove(player);
-		int blvl = PLXP.getBLVL(), bexp = PLXP.getBXP(),
-			clvl = PLXP.getCLVL(), cexp = PLXP.getCXP(),
-			elvl = PLXP.getELVL(), eexp = PLXP.getEXP(),
-			flvl = PLXP.getFLVL(), fexp = PLXP.getFXP(),
-			mlvl = PLXP.getMLVL(), mexp = PLXP.getMXP(),
-			tlvl = PLXP.getTLVL(), texp = PLXP.getTXP(),
-			wlvl = PLXP.getWLVL(), wexp = PLXP.getWXP();
+		int blvl = PLXP.getBLVL(),
+			clvl = PLXP.getCLVL(),
+			elvl = PLXP.getELVL(), 
+			flvl = PLXP.getFLVL(), 
+			mlvl = PLXP.getMLVL(), 
+			tlvl = PLXP.getTLVL(), 
+			wlvl = PLXP.getWLVL();
+		
+		long bexp = PLXP.getBXP(),
+			 cexp = PLXP.getCXP(),
+			 eexp = PLXP.getEXP(),
+			 fexp = PLXP.getFXP(),
+			 mexp = PLXP.getMXP(),
+			 texp = PLXP.getTXP(),
+			 wexp = PLXP.getWXP();
 		
 		if(MySQL){
 			Connection conn = getMySQLConn();
@@ -1427,19 +1443,19 @@ public class CRData {
 			try{
 				ps = conn.prepareStatement("UPDATE CraftingReloaded SET BLVL = ?, BEXP = ?, CLVL = ?, CEXP = ?, ELVL = ?, EEXP = ?, FLVL = ?, FEXP = ?, MLVL = ?, MEXP = ?, TLVL = ?, TEXP = ?, WLVL = ?, WEXP = ? WHERE Player = ?");
 				ps.setInt(1, blvl);
-				ps.setInt(2, bexp);
+				ps.setLong(2, bexp);
 				ps.setInt(3, clvl);
-				ps.setInt(4, cexp);
+				ps.setLong(4, cexp);
 				ps.setInt(5, elvl);
-				ps.setInt(6, eexp);
+				ps.setLong(6, eexp);
 				ps.setInt(7, flvl);
-				ps.setInt(8, fexp);
+				ps.setLong(8, fexp);
 				ps.setInt(9, mlvl);
-				ps.setInt(10, mexp);
+				ps.setLong(10, mexp);
 				ps.setInt(11, tlvl);
-				ps.setInt(12, texp);
+				ps.setLong(12, texp);
 				ps.setInt(13, wlvl);
-				ps.setInt(14, wexp);
+				ps.setLong(14, wexp);
 				ps.setString(15, player);
 				ps.executeUpdate();
 			} catch (SQLException ex) {
@@ -1456,13 +1472,13 @@ public class CRData {
 		}
 		else{
 			PELP = new PropertiesFile(PDir+player+PEL);
-			PELP.setInt("BLVL", blvl); PELP.setInt("BEXP", bexp);
-			PELP.setInt("CLVL", clvl); PELP.setInt("CEXP", cexp);
-			PELP.setInt("ELVL", elvl); PELP.setInt("EEXP", eexp);
-			PELP.setInt("FLVL", flvl); PELP.setInt("FEXP", fexp);
-			PELP.setInt("MLVL", mlvl); PELP.setInt("MEXP", mexp);
-			PELP.setInt("TLVL", tlvl); PELP.setInt("TEXP", texp);
-			PELP.setInt("WLVL", wlvl); PELP.setInt("WEXP", wexp);
+			PELP.setInt("BLVL", blvl); PELP.setLong("BEXP", bexp);
+			PELP.setInt("CLVL", clvl); PELP.setLong("CEXP", cexp);
+			PELP.setInt("ELVL", elvl); PELP.setLong("EEXP", eexp);
+			PELP.setInt("FLVL", flvl); PELP.setLong("FEXP", fexp);
+			PELP.setInt("MLVL", mlvl); PELP.setLong("MEXP", mexp);
+			PELP.setInt("TLVL", tlvl); PELP.setLong("TEXP", texp);
+			PELP.setInt("WLVL", wlvl); PELP.setLong("WEXP", wexp);
 		}
 	}
 	
@@ -1479,19 +1495,19 @@ public class CRData {
 						PLXP = PLVLXPT.get(key);
 						
 						ps.setInt(1, PLXP.getBLVL());
-						ps.setInt(2, PLXP.getBXP());
+						ps.setLong(2, PLXP.getBXP());
 						ps.setInt(3, PLXP.getCLVL());
-						ps.setInt(4, PLXP.getCXP());
+						ps.setLong(4, PLXP.getCXP());
 						ps.setInt(5, PLXP.getELVL());
-						ps.setInt(6, PLXP.getEXP());
+						ps.setLong(6, PLXP.getEXP());
 						ps.setInt(7, PLXP.getFLVL());
-						ps.setInt(8, PLXP.getFXP());
+						ps.setLong(8, PLXP.getFXP());
 						ps.setInt(9, PLXP.getMLVL());
-						ps.setInt(10, PLXP.getMXP());
+						ps.setLong(10, PLXP.getMXP());
 						ps.setInt(11, PLXP.getTLVL());
-						ps.setInt(12, PLXP.getTXP());
+						ps.setLong(12, PLXP.getTXP());
 						ps.setInt(13, PLXP.getWLVL());
-						ps.setInt(14, PLXP.getWXP());
+						ps.setLong(14, PLXP.getWXP());
 						ps.setString(15, key);
 						ps.addBatch();
 					}
@@ -1513,13 +1529,13 @@ public class CRData {
 					PELP = new PropertiesFile(PDir+key+PEL);
 					PLXP = PLVLXPT.get(key);
 					
-					PELP.setInt("BLVL", PLXP.getBLVL()); PELP.setInt("BEXP", PLXP.getBXP());
-					PELP.setInt("CLVL", PLXP.getCLVL()); PELP.setInt("CEXP", PLXP.getCXP());
-					PELP.setInt("ELVL", PLXP.getELVL()); PELP.setInt("EEXP", PLXP.getEXP());
-					PELP.setInt("FLVL", PLXP.getFLVL()); PELP.setInt("FEXP", PLXP.getFXP());
-					PELP.setInt("MLVL", PLXP.getMLVL()); PELP.setInt("MEXP", PLXP.getMXP());
-					PELP.setInt("TLVL", PLXP.getTLVL()); PELP.setInt("TEXP", PLXP.getTXP());
-					PELP.setInt("WLVL", PLXP.getWLVL()); PELP.setInt("WEXP", PLXP.getWXP());
+					PELP.setInt("BLVL", PLXP.getBLVL()); PELP.setLong("BEXP", PLXP.getBXP());
+					PELP.setInt("CLVL", PLXP.getCLVL()); PELP.setLong("CEXP", PLXP.getCXP());
+					PELP.setInt("ELVL", PLXP.getELVL()); PELP.setLong("EEXP", PLXP.getEXP());
+					PELP.setInt("FLVL", PLXP.getFLVL()); PELP.setLong("FEXP", PLXP.getFXP());
+					PELP.setInt("MLVL", PLXP.getMLVL()); PELP.setLong("MEXP", PLXP.getMXP());
+					PELP.setInt("TLVL", PLXP.getTLVL()); PELP.setLong("TEXP", PLXP.getTXP());
+					PELP.setInt("WLVL", PLXP.getWLVL()); PELP.setLong("WEXP", PLXP.getWXP());
 				}
 			}
 		UpdateAntiBlockFarm();

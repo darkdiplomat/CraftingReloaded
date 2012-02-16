@@ -7,17 +7,17 @@ public class CRActions {
 		this.CRD = CRD;
 	}
 	
-	private final String LVLM = "[§bYour§e %s §blevel is:§2 %s §band Exp is:§2 %s §f]";
-	private final String EXPM = "[§bExp to next level:§2 %s §f]";
+	private final String LVLM = "[§bYour §e%s §6LEVEL§b:§2 %s §6XP§b:§2 %s§f]";
+	private final String EXPM = "[§eXP§b to next level:§2 %s§f]";
 	
-	private final String LVLT = "[§bYour §eTOTAL §blevel is:§2 %s §f]";
-	private final String EXPT = "[§bYour §eTOTAL §bexperience is:§2 %s §f]";
+	private final String LVLT = "[§bYour §eTOTAL §bLEVEL:§2 %s§f]";
+	private final String EXPT = "[§bYour §eTOTAL §bXP:§2 %s§f]";
 	
 	public boolean LevelExpCheck(Player player, String type){
-		int[] el = CRD.LevelXP(player.getName(), type);
-		int lvl = el[0], xp = el[1];
+		int lvl = CRD.getLevel(player.getName(), type);
+		long xp = CRD.getXP(player.getName(), type);
 		String t = tf(type);
-		int expto = CRD.getBaseExp(type, (lvl+1)) - xp;
+		long expto = CRD.getBaseExp(type, (lvl+1)) - xp;
 		if(expto < 0){
 			expto = 0;
 		}
@@ -27,9 +27,10 @@ public class CRActions {
 	}
 	
 	public boolean TotalLevelExpCheck(Player player){
-		int[] total = CRD.TotalEL(player.getName());
-		player.sendMessage(String.format(LVLT, String.valueOf(total[0])));
-		player.sendMessage(String.format(EXPT, String.valueOf(total[1])));
+		int tlvl = CRD.TotalLevel(player.getName());
+		long txp = CRD.TotalXP(player.getName());
+		player.sendMessage(String.format(LVLT, String.valueOf(tlvl)));
+		player.sendMessage(String.format(EXPT, String.valueOf(txp)));
 		return true;
 	}
 	
@@ -37,8 +38,8 @@ public class CRActions {
 		String[] skills = new String[]{"B", "C", "E", "F", "M", "T", "W"};
 		for(String type : skills){
 			String t = tf(type);
-			int[] el = CRD.LevelXP(player.getName(), type);
-			int lvl = el[0], xp = el[1];
+			int lvl = CRD.getLevel(player.getName(), type);
+			long xp = CRD.getXP(player.getName(), type);
 			player.sendMessage(String.format(LVLM, t, String.valueOf(lvl), String.valueOf(xp)));
 		}
 		return true;
@@ -46,25 +47,25 @@ public class CRActions {
 	
 	public String tf(String type){
 		if(type.equals("B")){
-			return "Building";
+			return "BUILDING";
 		}
 		else if(type.equals("C")){
-			return "Combat";
+			return "COMBAT";
 		}
 		else if(type.equals("E")){
-			return "Excavation";
+			return "EXCAVATING";
 		}
 		else if(type.equals("F")){
-			return "Farming";
+			return "FARMING";
 		}
 		else if(type.equals("M")){
-			return "Mining";
+			return "MINING";
 		}
 		else if(type.equals("T")){
-			return "Technician";
+			return "TECHNICIAN";
 		}
 		else if(type.equals("W")){
-			return "WoodCutting";
+			return "WOODCUTTING";
 		}
 		return "";
 	}
@@ -76,10 +77,10 @@ public class CRActions {
 			CRD.addExp("B", player, exp);
 		}
 		if(CRD.Bonus2(player.getName(), "B")){
-			player.giveItem(371, 1);
+			player.giveItemDrop(371, 1);
 		}
 		if(CRD.Bonus3(player.getName(), "B")){
-			player.giveItem(264, 1);
+			player.giveItemDrop(264, 1);
 		}
 		if(CRD.Bonus4(player.getName(), "B")){
 			int add = player.getItemStackInHand().getAmount() + 1;
@@ -94,9 +95,13 @@ public class CRActions {
 	
 	public boolean PVP(Player attack, Player defend, int damage){
 		boolean drop1 = false, drop2 = false, extraxp = false;
-		int d1 = rand.nextInt(10)+1;
-		int d2 = rand.nextInt(15)+5;
-		//int dr = rand.nextInt(5)+1;
+		int d1 = rand.nextInt(5)+1;
+		int d2 = rand.nextInt(7)+3;
+		int blood = rand.nextInt(3)+1;
+		int bones = rand.nextInt(3)+1;
+		if(CRD.Bonus5(defend.getName(), "C")){
+			return true;
+		}
 		if(CRD.Bonus1(attack.getName(), "C")){
 			drop1 = true;
 		}
@@ -105,28 +110,36 @@ public class CRActions {
 		}
 		if(CRD.Bonus3(attack.getName(), "C")){
 			if(!CRD.Bonus3(defend.getName(), "C")){
-				defend.setHealth(defend.getHealth()-d1);
+				if(defend.getHealth()-d1 < 1){
+					defend.setHealth(1);
+				}
+				else{
+					defend.setHealth(defend.getHealth()-d1);
+				}
 			}
 		}
 		if(CRD.Bonus4(attack.getName(), "C")){
-			if(!CRD.Bonus3(defend.getName(), "C")){
-				defend.setHealth(defend.getHealth()-d2);
+			if(!CRD.Bonus4(defend.getName(), "C")){
+				if(defend.getHealth()-d2 < 1){
+					defend.setHealth(1);
+				}
+				else{
+					defend.setHealth(defend.getHealth()-d2);
+				}
 			}
 		}
 		if(CRD.Bonus5(attack.getName(), "C")){
 			drop2 = true;
 		}
-		if(CRD.Bonus5(defend.getName(), "C")){
-			return true;
-		}
 		if(defend.getHealth()-damage <= 0){
 			int exp = CRD.getCET("PVP");
 			CRD.addExp("C", attack, exp);
 			if(drop1){
-				//??
+				defend.getWorld().dropItem(defend.getLocation(), 352, bones);
+				defend.getWorld().dropItem(defend.getLocation(), 331, blood);
 			}
 			if(drop2){
-				//??
+				//defend.getWorld().dropItem(defend.getLocation(), 331, 1); TODO
 			}
 			if(extraxp){
 				CRD.addExp("C", attack, exp);
@@ -137,9 +150,10 @@ public class CRActions {
 	
 	public boolean MobCombat(Player player, Mob mob, int damage){
 		boolean drop1 = false, drop2 = false, extraxp = false;
-		int d1 = rand.nextInt(10)+1;
-		int d2 = rand.nextInt(15)+5;
-		int dr = rand.nextInt(5)+1;
+		int d1 = rand.nextInt(5)+1;
+		int d2 = rand.nextInt(7)+3;
+		int blood = rand.nextInt(3)+1;
+		int bones = rand.nextInt(3)+1;
 		if(CRD.Bonus1(player.getName(), "C")){
 			drop1 = true;
 		}
@@ -147,10 +161,20 @@ public class CRActions {
 			extraxp = true;
 		}
 		if(CRD.Bonus3(player.getName(), "C")){
-			mob.setHealth(mob.getHealth()-d1);
+			if(mob.getHealth()-d1 < 1){
+				mob.setHealth(1);
+			}
+			else{
+				mob.setHealth(mob.getHealth()-d1);
+			}
 		}
 		if(CRD.Bonus4(player.getName(), "C")){
-			mob.setHealth(mob.getHealth()-d2);
+			if(mob.getHealth()-d2 < 1){
+				mob.setHealth(1);
+			}
+			else{
+				mob.setHealth(mob.getHealth()-d2);
+			}
 		}
 		if(CRD.Bonus5(player.getName(), "C")){
 			drop2 = true;
@@ -160,10 +184,11 @@ public class CRActions {
 				int exp = CRD.getCET(mob.getName());
 				CRD.addExp("C", player, exp);
 				if(drop1){
-					mob.dropLoot();
+					mob.getWorld().dropItem(mob.getLocation(), 352, bones);
+					mob.getWorld().dropItem(mob.getLocation(), 331, blood);
 				}
 				if(drop2){
-					mob.getWorld().dropItem(mob.getLocation(), 356, dr);
+					mob.dropLoot();
 				}
 				if(extraxp){
 					CRD.addExp("C", player, exp);
@@ -177,7 +202,8 @@ public class CRActions {
 		boolean drop1 = false, drop2 = false, extraxp = false;
 		int d1 = rand.nextInt(10)+1;
 		int d2 = rand.nextInt(15)+5;
-		int dr = rand.nextInt(5)+1;
+		int blood = rand.nextInt(3)+1;
+		int bones = rand.nextInt(3)+1;
 		if(CRD.Bonus1(player.getName(), "F")){
 			drop1 = true;
 		}
@@ -185,10 +211,20 @@ public class CRActions {
 			extraxp = true;
 		}
 		if(CRD.Bonus3(player.getName(), "F")){
-			Animal.setHealth(Animal.getHealth()-d1);
+			if(Animal.getHealth()-d1 < 1){
+				Animal.setHealth(1);
+			}
+			else{
+				Animal.setHealth(Animal.getHealth()-d1);
+			}
 		}
 		if(CRD.Bonus4(player.getName(), "F")){
-			Animal.setHealth(Animal.getHealth()-d2);
+			if(Animal.getHealth()-d2 < 1){
+				Animal.setHealth(1);
+			}
+			else{
+				Animal.setHealth(Animal.getHealth()-d2);
+			}
 		}
 		if(CRD.Bonus5(player.getName(), "F")){
 			drop2 = true;
@@ -198,10 +234,11 @@ public class CRActions {
 				int exp = CRD.getCET(Animal.getName());
 				CRD.addExp("F", player, exp);
 				if(drop1){
-					Animal.dropLoot();
+					Animal.getWorld().dropItem(Animal.getLocation(), 352, bones);
+					Animal.getWorld().dropItem(Animal.getLocation(), 331, blood);
 				}
 				if(drop2){
-					Animal.getWorld().dropItem(Animal.getLocation(), 356, dr);
+					Animal.dropLoot();
 				}
 				if(extraxp){
 					CRD.addExp("F", player, exp);
@@ -321,10 +358,10 @@ public class CRActions {
 			CRD.addExp("T", player, exp);
 		}
 		if(CRD.Bonus2(player.getName(), "T")){
-			player.giveItem(331, 1);
+			player.giveItemDrop(331, 1);
 		}
 		if(CRD.Bonus3(player.getName(), "T")){
-			player.giveItem(371, 1);
+			player.giveItemDrop(371, 1);
 		}
 		if(CRD.Bonus4(player.getName(), "T")){
 			player.getInventory().setSlot(player.getItemInHand(), player.getItemStackInHand().getAmount()+1, player.getItemStackInHand().getDamage(), player.getItemStackInHand().getSlot());

@@ -97,7 +97,7 @@ public class CRListener extends PluginListener {
 	}
 	
 	public boolean onBlockPlace(Player player, Block bp, Block bc, Item itemInHand){
-		if(player.getCreativeMode() == 0){
+		if(!player.getMode()){
 			if(!isProtected(player, bc, "create")){
 				if(bp != null && bp.getType() != 0){
 					if(player.canUseCommand("/skills")){
