@@ -58,7 +58,7 @@ public class CRListener extends PluginListener {
 					else if((cmd[1].equalsIgnoreCase("all")) || (cmd[1].equalsIgnoreCase("a"))){
 						return CRA.AllLevelExpCheck(player);
 					}
-					else if((cmd[1].equalsIgnoreCase("total"))||(cmd[1].equalsIgnoreCase("-t"))){
+					else if((cmd[1].equalsIgnoreCase("total"))||(cmd[1].equalsIgnoreCase("to"))){
 						return CRA.TotalLevelExpCheck(player);
 					}
 				}
@@ -67,22 +67,24 @@ public class CRListener extends PluginListener {
 					if(player.isAdmin() && !CR.isLatest()){
 						player.sendMessage("§6----[§3There is an update! V"+CR.CurrVer+"§6]----");
 					}
-					player.sendMessage("§a/skills building§b - displays §6BUILDING§b level and XP");
-					player.sendMessage("§a/skills combat§b - displays §6COMBAT§b level and XP");
-					player.sendMessage("§a/skills excavating§b - displays §6EXCAVATING§b level and XP");
-					player.sendMessage("§a/skills farming§b - displays §6FARMING§b level and XP");
-					player.sendMessage("§a/skills mining§b - displays §6MINING§b level");
-					player.sendMessage("§a/skills technician§b - displays §6TECHNICIAN§b level and XP");
-					player.sendMessage("§a/skills woodcutting§b - displays §6WOODCUTTING§b level and XP");
-					player.sendMessage("§a/skills all§b - displays §6ALL§b levels and XP");
-					player.sendMessage("§a/skills total§b - displays §6TOTAL§b level and XP");
-					player.sendMessage("§6Aliases: b, c, e, f, m, t, w");
+					player.sendMessage("§a/skills building§b        - displays §6BUILDING§b level and XP");
+					player.sendMessage("§a/skills combat§b        - displays §6COMBAT§b level and XP");
+					player.sendMessage("§a/skills excavating§b   - displays §6EXCAVATING§b level and XP");
+					player.sendMessage("§a/skills farming§b        - displays §6FARMING§b level and XP");
+					player.sendMessage("§a/skills mining§b          - displays §6MINING§b level");
+					player.sendMessage("§a/skills technician§b    - displays §6TECHNICIAN§b level and XP");
+					player.sendMessage("§a/skills woodcutting§b  - displays §6WOODCUTTING§b level and XP");
+					player.sendMessage("§a/skills all§b              - displays §6ALL§b levels and XP");
+					player.sendMessage("§a/skills total§b           - displays §6TOTAL§b level and XP");
+					player.sendMessage("§aAliases:§e b, c, e, f, m, t, w, a, to");
 					return true;
 				}
 			}
 		}
 		else if((cmd[0].equalsIgnoreCase("/#save-all"))||(cmd[0].equalsIgnoreCase("/#stop"))){
-			saveall(player);
+			if(player.isOp()){
+				CRD.SaveItNow();
+			}
 		}
 		return false;
 	}
@@ -366,12 +368,6 @@ public class CRListener extends PluginListener {
 		case 356: return 93;
 		case 362: return 105;
 		default: return 0;
-		}
-	}
-	
-	private void saveall(Player player){
-		if(player.isOp()){
-			CRD.SaveItNow();
 		}
 	}
 	

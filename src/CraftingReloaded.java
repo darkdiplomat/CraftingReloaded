@@ -20,7 +20,7 @@ public class CraftingReloaded extends Plugin {
 	public void enable() {
 		log.info("[CraftingReloaded] Version "+version+" Enabled!");
 		if(!isLatest()){
-			log.info("Realms: There is an update available! "+CurrVer);
+			log.info("[CraftingReloaded] There is an update available! "+CurrVer);
 		}
 	}
 	public void initialize(){
@@ -35,7 +35,7 @@ public class CraftingReloaded extends Plugin {
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_BROKEN, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_RIGHTCLICKED, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_PLACE, CRL, this, PluginListener.Priority.LOW);
-		etc.getLoader().addListener(PluginLoader.Hook.DAMAGE, CRL, this, PluginListener.Priority.MEDIUM);
+		etc.getLoader().addListener(PluginLoader.Hook.DAMAGE, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.ITEM_USE, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.ENTITY_RIGHTCLICKED, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.FOODLEVEL_CHANGE, CRL, this, PluginListener.Priority.LOW);
