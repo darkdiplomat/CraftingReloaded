@@ -16,13 +16,11 @@ public class CRListener extends PluginListener {
 	}
 	
 	public void onLogin(Player player){
-		if(player.canUseCommand("/skills")){
-			if(CRD.keyExists(player.getName())){
-				CRD.loadEXP(player.getName());
-			}
-			else{
-				CRD.setInitialEXP(player.getName());
-			}
+		if(CRD.keyExists(player.getName())){
+			CRD.loadEXP(player.getName());
+		}
+		else if(player.canUseCommand("/skills")){
+			CRD.setInitialEXP(player.getName());
 		}
 	}
 	
