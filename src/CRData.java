@@ -141,37 +141,37 @@ public class CRData {
 			BufferedWriter out = new BufferedWriter(new FileWriter(Dir+EL));
 			out.write("#CraftingReloaded Experience File#"); out.newLine();
 			out.write("#Building EXP#"); out.newLine();
-			for(i = 1; i < maxlevel; i++){
+			for(i = 1; i <= maxlevel; i++){
 				xp = (i*150L);
 				out.write("Building"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Combat EXP#"); out.newLine();
-			for(i = 1; i < maxlevel; i++){
+			for(i = 1; i <= maxlevel; i++){
 				xp = (i*150L);
 				out.write("Combat"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Excavating EXP#"); out.newLine();
-			for(i = 1; i < maxlevel; i++){
+			for(i = 1; i <= maxlevel; i++){
 				xp = (i*150L);
 				out.write("Excavating"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Farming EXP#"); out.newLine();
-			for(i = 1; i < maxlevel; i++){
+			for(i = 1; i <= maxlevel; i++){
 				xp = (i*150L);
 				out.write("Farming"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Mining EXP#"); out.newLine();
-			for(i = 1; i < maxlevel; i++){
+			for(i = 1; i <= maxlevel; i++){
 				xp = (i*150L);
 				out.write("Mining"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#Technician EXP#"); out.newLine();
-			for(i = 1; i < maxlevel; i++){
+			for(i = 1; i <= maxlevel; i++){
 				xp = (i*150L);
 				out.write("Technician"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
 			out.write("#WoodCutting EXP#"); out.newLine();
-			for(i = 1; i < maxlevel; i++){
+			for(i = 1; i <= maxlevel; i++){
 				xp = (i*150L);
 				out.write("WoodCutting"+String.valueOf(i)+"="+String.valueOf(xp)); out.newLine();
 			}
@@ -371,21 +371,29 @@ public class CRData {
 	
 	private void populateEXPTable(){
 		long xp;
-		for(int i = 1; i < maxlevel; i++){
-			xp = xploadednull("Building", i, ETP.getLong("Building"+i));
-			building[i] = xp;
-			xp = xploadednull("Combat", i, ETP.getLong("Combat"+i));
-			combat[i] = xp;
-			xp = xploadednull("Excavating", i, ETP.getLong("Excavating"+i));
-			excavating[i] = xp;
-			xp = xploadednull("farming", i, ETP.getLong("Farming"+i));
-			farming[i] = xp;
-			xp = xploadednull("Mining", i, ETP.getLong("Mining"+i));
-			mining[i] = xp;
-			xp = xploadednull("Technician", i, ETP.getLong("Technician"+i));
-			technician[i] = xp;
-			xp = xploadednull("WoodCutting", i, ETP.getLong("WoodCutting"+i));
-			woodcutting[i] = xp;
+		long check = -1;
+		for(int i = 1; i <= maxlevel; i++){
+			if(ETP.containsKey("Building"+i)){ check = ETP.getLong("Building"+i); }
+			xp = xploadednull("Building", i, check);
+			building[i] = xp; check = -1;
+			if(ETP.containsKey("Combat"+i)){ check = ETP.getLong("Combat"+i); }
+			xp = xploadednull("Combat", i, check);
+			combat[i] = xp; check = -1;
+			if(ETP.containsKey("Excavating"+i)){ check = ETP.getLong("Excavating"+i); }
+			xp = xploadednull("Excavating", i, check);
+			excavating[i] = xp; check = -1;
+			if(ETP.containsKey("Farming"+i)){ check = ETP.getLong("Farming"+i); }
+			xp = xploadednull("Farming", i, check);
+			farming[i] = xp; check = -1;
+			if(ETP.containsKey("Mining"+i)){ check = ETP.getLong("Mining"+i); }
+			xp = xploadednull("Mining", i, check);
+			mining[i] = xp; check = -1;
+			if(ETP.containsKey("Technician"+i)){ check = ETP.getLong("Technician"+i); }
+			xp = xploadednull("Technician", i, check);
+			technician[i] = xp; check = -1;
+			if(ETP.containsKey("WoodCutting"+i)){ check = ETP.getLong("WoodCutting"+i); }
+			xp = xploadednull("WoodCutting", i, check);
+			woodcutting[i] = xp; check = -1;
 		}
 	}
 	
@@ -618,13 +626,13 @@ public class CRData {
 		}
 		Settings = new PropertiesFile(Dir+Set);
 		try{
-			maxlevel = Settings.getInt("MaxLevel") + 1;
+			maxlevel = Settings.getInt("MaxLevel");
 		}catch(Exception e){
-			maxlevel = 1000000000;
+			maxlevel = 100;
 		}
 		if(maxlevel <= 0){
 			log.warning("[CraftingReloaded] MaxLevel was 0 or less! Defaulting to 100!");
-			maxlevel = 101;
+			maxlevel = 100;
 		}
 		UserName = Settings.getString("UserName");
 		PassWord = Settings.getString("Password");
@@ -865,7 +873,7 @@ public class CRData {
 			xp = woodcutting[L];
 		}
 		if(xp <= 0){
-			log.warning("[CraftingReloaded] - Let DarkDiplomat know you had an error at getBaseExp(L:823) For Skill: "+type+" Level: "+L);
+			log.warning("[CraftingReloaded] - Let DarkDiplomat know you had an error at getBaseExp(L:868) For Skill: "+type+" Level: "+L);
 		}
 		return xp;
 	}
