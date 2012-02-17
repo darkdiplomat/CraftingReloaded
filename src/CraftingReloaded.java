@@ -10,8 +10,8 @@ public class CraftingReloaded extends Plugin {
 	CRData CRD;
 	CRActions CRA;
 	CRListener CRL;
-	public final String version = "3.0b9";
-	public String CurrVer = "3.0b9";
+	public final String version = "3.0b10";
+	public String CurrVer = "3.0b10";
 	
 	public void disable() {
 		CRD.Disabler();
@@ -35,9 +35,8 @@ public class CraftingReloaded extends Plugin {
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_BROKEN, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_RIGHTCLICKED, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_PLACE, CRL, this, PluginListener.Priority.LOW);
-		etc.getLoader().addListener(PluginLoader.Hook.DAMAGE, CRL, this, PluginListener.Priority.LOW);
+		etc.getLoader().addListener(PluginLoader.Hook.DAMAGE, CRL, this, PluginListener.Priority.MEDIUM);
 		etc.getLoader().addListener(PluginLoader.Hook.ITEM_USE, CRL, this, PluginListener.Priority.LOW);
-		etc.getLoader().addListener(PluginLoader.Hook.TAME, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.ENTITY_RIGHTCLICKED, CRL, this, PluginListener.Priority.LOW);
 		etc.getLoader().addListener(PluginLoader.Hook.FOODLEVEL_CHANGE, CRL, this, PluginListener.Priority.LOW);
 		CRD.ReloadOnline();

@@ -1,11 +1,11 @@
 import java.util.ArrayList;
-
+import java.util.Random;
 
 public class CRListener extends PluginListener {
-	CraftingReloaded CR;
-	CRData CRD;
-	CRActions CRA;
-	ArrayList<Block> AntiBlockFarm;
+	private CraftingReloaded CR;
+	private CRData CRD;
+	private CRActions CRA;
+	protected ArrayList<Block> AntiBlockFarm;
 	private final PluginLoader loader = etc.getLoader();
 	
 	public CRListener(CraftingReloaded CR, CRData CRD, CRActions CRA){
@@ -89,7 +89,7 @@ public class CRListener extends PluginListener {
 	
 	public boolean onConsoleCommand(String[] cmd){
 		if((cmd[0].equalsIgnoreCase("save-all")) || (cmd[0].equalsIgnoreCase("stop"))){
-			CRD.SaveAll();
+			CRD.SaveItNow();
 		}
 		return false;
 	}
@@ -227,37 +227,41 @@ public class CRListener extends PluginListener {
 	}
 	
 	public boolean onDamage(PluginLoader.DamageType type, BaseEntity attacker, BaseEntity defender, int amount){
-		if (type == PluginLoader.DamageType.ENTITY){
+		if (type.equals(PluginLoader.DamageType.ENTITY)){
 			if(attacker.isPlayer()){
 				Player player = attacker.getPlayer();
-				if(!player.getMode() && !player.isDamageDisabled()){
-					if(player.canUseCommand("/skills")){
-						if(defender.isPlayer()){
-							Player defending = defender.getPlayer();
-							boolean pvp = isPVPDisabled(player);
-							if(!pvp){
-								if(CRD.combatent("PVP")){
-									if(!defending.getMode() && !defending.isDamageDisabled()){
-										return CRA.PVP(player, defending, amount);
-									}
-								}
-							}
-							else if(defender.isMob()){
-								Mob mob = new Mob((OEntityLiving)defender.getEntity());
-								if(CRD.combatent(mob.getName())){
-									if(CRD.combatent(mob.getName())){
-										return CRA.MobCombat(player, mob, amount);
-									}
-								}
-							}
-							else if(defender.isAnimal()){
-								Mob animal = new Mob((OEntityLiving)defender.getEntity());
-								if(CRD.combatent(animal.getName())){
-									return CRA.AnimalSlaughter(player, animal, amount);
+				if((!player.getMode()) && (!player.isDamageDisabled()) && player.canUseCommand("/skills")){
+					if(defender.isPlayer()){
+						Player defending = defender.getPlayer();
+						if(!isPVPDisabled(player)){
+							if(CRD.combatent("PVP")){
+								if(!defending.getMode() && !defending.isDamageDisabled()){
+									return CRA.PVP(player, defending, amount);
 								}
 							}
 						}
 					}
+					else if(defender.isMob()){
+						Mob mob = new Mob((OEntityLiving)defender.getEntity());
+						if(CRD.combatent(mob.getName())){
+							if(CRD.combatent(mob.getName())){
+								return CRA.MobAttack(player, mob, amount);
+							}
+						}
+					}
+					else if(defender.isAnimal()){
+						Mob animal = new Mob((OEntityLiving)defender.getEntity());
+						if(CRD.combatent(animal.getName())){
+							return CRA.AnimalSlaughter(player, animal, amount);
+						}
+					}
+				}
+			}
+			else if(defender.isPlayer() && attacker.isMob()){
+				Player player = defender.getPlayer();
+				Mob mob = new Mob((OEntityLiving)attacker.getEntity());
+				if(!player.getMode() && !player.isDamageDisabled() && player.canUseCommand("/skills") && CRD.combatent(mob.getName())){
+					return CRA.MobDefend(player, mob, amount);
 				}
 			}
 		}
@@ -265,20 +269,42 @@ public class CRListener extends PluginListener {
 	}
 	
 	public PluginLoader.HookResult onEntityRightClick(Player player, BaseEntity entity, Item item){
-		if(entity.isAnimal()){
-			Mob cow = new Mob((OEntityLiving)entity.getEntity());
-			if(cow.getName().equals("Cow")){
-				if(item.getType() == Item.Type.Bucket){
+		if(entity != null && entity.isAnimal()){
+			Block block = player.getWorld().getBlockAt((int)entity.getX(), (int)entity.getY(), (int)entity.getZ());
+			if(!isProtected(player, block, "interact")){
+				Mob mob = new Mob((OEntityLiving)entity.getEntity());
+				if(item.getType() == Item.Type.Wheat){
 					CRD.addExp("F", player, 1);
+				}
+				else if(item.getType() == Item.Type.Bucket){
+					if(mob.getName().equals("Cow")){
+						CRD.addExp("F", player, 1);
+					}
 				}
 			}
 		}
 		return PluginLoader.HookResult.DEFAULT_ACTION;
 	}
 	
-//	public int onFoodLevelChange(Player player, int oldFoodLevel, int newFoodLevel){
-//		return newFoodLevel;
-//	}
+	public int onFoodLevelChange(Player player, int oldFoodLevel, int newFoodLevel){
+		if(player.canUseCommand("/skills")){
+			if(CRD.Bonus3(player.getName(), "F")){
+				return oldFoodLevel;
+			}
+		}
+		return newFoodLevel;
+	}
+	
+	public boolean onEat(Player player, Item item){
+		if(isFood(item.getType())){
+			if(CRD.Bonus2(player.getName(), "F")){
+				Random random = new Random();
+				int newlevel = player.getFoodLevel() + (random.nextInt(3)+1);
+				player.setFoodLevel(newlevel);
+			}
+		}
+		return false;
+	}
 	
 	private boolean isProtected(Player player, Block block, String type){
 		if(block == null){
@@ -345,7 +371,7 @@ public class CRListener extends PluginListener {
 	
 	private void saveall(Player player){
 		if(player.isOp()){
-			CRD.SaveAll();
+			CRD.SaveItNow();
 		}
 	}
 	
@@ -368,5 +394,28 @@ public class CRListener extends PluginListener {
 	
 	private boolean isAntiFarm(Block block){
 		return AntiBlockFarm.contains(block);
+	}
+	
+	private boolean isFood(Item.Type type){
+		switch(type){
+		case Bread:
+		case Cookie:
+		case MelonSlice:
+		case MushroomSoup:
+		case RawChicken:
+		case CookedChicken:
+		case RawBeef:
+		case Steak:
+		case Pork:
+		case GrilledPork:
+		case RawFish:
+		case CookedFish:
+		case Apple:
+		case RottenFlesh:
+		case SpiderEye:
+			return true;
+		default:
+			return false;
+		}
 	}
 }

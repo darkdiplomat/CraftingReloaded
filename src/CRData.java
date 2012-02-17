@@ -13,8 +13,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,7 +56,7 @@ public class CRData {
 	private PropertiesFile PELP;
 	private PropertiesFile ETP;
 	
-	private Timer SaveIt;
+	private SaveTime SaveIt;
 	
 	private CRListener CRL;
 
@@ -87,7 +85,7 @@ public class CRData {
 		RequireAxe = new ArrayList<Integer>();
 		RequireShovel = new ArrayList<Integer>();
 		
-		SaveIt = new Timer();
+		SaveIt = new SaveTime();
 		
 		loadSettings();
 		
@@ -112,8 +110,6 @@ public class CRData {
 		populateCET();
 		populateBET();
 		populateAntiBlockFarmData();
-		SaveIt.schedule(new SaveTime(), savedelay*60000);
-		
 	}
 	
 	private void makeDir(){
@@ -682,6 +678,8 @@ public class CRData {
 		if(MySQL){
 			CreateTables();
 		}
+		
+		SaveIt.start();
 	}
 	
 	private void populateBET(){
@@ -1279,6 +1277,7 @@ public class CRData {
 			PELP.setInt("MLVL", 0); PELP.setLong("MEXP", 0);
 			PELP.setInt("TLVL", 0); PELP.setLong("TEXP", 0);
 			PELP.setInt("WLVL", 0); PELP.setLong("WEXP", 0);
+			PELP.save();
 		}
 		CRPlayerLevelExperience PLXP = new CRPlayerLevelExperience(name);
 		PLVLXPT.put(name, PLXP);
@@ -1341,13 +1340,19 @@ public class CRData {
 		}
 		else{
 			PELP = new PropertiesFile(PDir+name+PEL);
-			blvl = PELP.getInt("BLVL"); bexp = PELP.getLong("BEXP");
-			clvl = PELP.getInt("CLVL"); cexp = PELP.getLong("CEXP");
-			elvl = PELP.getInt("ELVL"); eexp = PELP.getLong("EEXP");
-			flvl = PELP.getInt("FLVL"); fexp = PELP.getLong("FEXP");
-			mlvl = PELP.getInt("MLVL"); mexp = PELP.getLong("MEXP");
-			tlvl = PELP.getInt("TLVL"); texp = PELP.getLong("TEXP");
-			wlvl = PELP.getInt("WLVL"); wexp = PELP.getLong("WEXP");
+			try {
+				PELP.load();
+				blvl = PELP.getInt("BLVL"); bexp = PELP.getLong("BEXP");
+				clvl = PELP.getInt("CLVL"); cexp = PELP.getLong("CEXP");
+				elvl = PELP.getInt("ELVL"); eexp = PELP.getLong("EEXP");
+				flvl = PELP.getInt("FLVL"); fexp = PELP.getLong("FEXP");
+				mlvl = PELP.getInt("MLVL"); mexp = PELP.getLong("MEXP");
+				tlvl = PELP.getInt("TLVL"); texp = PELP.getLong("TEXP");
+				wlvl = PELP.getInt("WLVL"); wexp = PELP.getLong("WEXP");
+			} catch (IOException e) {
+				log.severe("[CraftingReloaded] - ERROR @ loadEXP (L:1301/1344)!");
+				e.printStackTrace();
+			}
 		}
 		
 		PLXP = new CRPlayerLevelExperience(name);
@@ -1424,6 +1429,7 @@ public class CRData {
 			PELP.setInt("MLVL", mlvl); PELP.setLong("MEXP", mexp);
 			PELP.setInt("TLVL", tlvl); PELP.setLong("TEXP", texp);
 			PELP.setInt("WLVL", wlvl); PELP.setLong("WEXP", wexp);
+			PELP.save();
 		}
 	}
 	
@@ -1562,23 +1568,6 @@ public class CRData {
 		}
 	}
 	
-	public void Disabler(){
-		SaveIt.cancel();
-		SaveAll();
-	}
-	
-	public class SaveTime extends TimerTask{
-		public SaveTime(){}
-		
-		public void run(){
-			SaveAll();
-			UpdateAntiBlockFarm();
-			if(etc.getLoader().getPlugin("CraftingReloaded").isEnabled()){
-				SaveIt.schedule(new SaveTime(), savedelay*60000);
-			}
-		}
-	}
-	
 	public String BTS(Block block){
 		StringBuffer BlockBuf = new StringBuffer();
 		BlockBuf.append(block.getType());
@@ -1591,5 +1580,61 @@ public class CRData {
 		BlockBuf.append(",");
 		BlockBuf.append(block.getWorld().getType().getId());
 		return BlockBuf.toString();
+	}
+	
+	public void Disabler(){
+		SaveIt.disable();
+		SaveIt = null;
+		try{
+			SaveNow save = new SaveNow();
+			save.start();
+		}catch(NoClassDefFoundError NCDFE){ //For Update Reasons
+			SaveAll();
+		}
+	}
+	
+	private class SaveTime extends Thread{
+		boolean running = false;
+		
+		public SaveTime(){
+			running = true;
+		}
+		
+		public void disable(){
+			running = false;
+		}
+		
+		public void run(){
+			while (running){
+				try {
+					sleep(savedelay*60000);
+				} catch (InterruptedException e) {}
+				if(running){
+					SaveAll();
+					UpdateAntiBlockFarm();
+				}
+			}
+			if(!running){
+				if(!isInterrupted()){
+					this.interrupt();
+				}
+			}
+		}
+	}
+	
+	public void SaveItNow(){
+		SaveNow save = new SaveNow();
+		save.start();
+		while(!save.isInterrupted()){
+			continue;
+		}
+	}
+	
+	private class SaveNow extends Thread{
+		public void run(){
+			SaveAll();
+			UpdateAntiBlockFarm();
+			this.interrupt();
+		}
 	}
 }
