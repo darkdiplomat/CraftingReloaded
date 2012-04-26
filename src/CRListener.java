@@ -319,26 +319,20 @@ public class CRListener extends PluginListener {
 		Plugin Realms = loader.getPlugin("Realms");
 		Plugin Cuboids2 = loader.getPlugin("Cuboids2");
 		Plugin CuboidPlugin = loader.getPlugin("CuboidPlugin");
-		try{
-    		if(Realms != null && Realms.isEnabled()){
-    			if(!(Boolean)etc.getLoader().callCustomHook("Realms-PermissionCheck", new Object[] {type, player, block})){
-    				protect = true;
-    			}
-    		}
-    		if(Cuboids2 != null && Cuboids2.isEnabled()){
-    			if(!(Boolean)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {"CAN_MODIFY", player, block })){
-    				protect = true;
-    			}
-    		}
-    		if(CuboidPlugin != null && CuboidPlugin.isEnabled()){
-    			if(!(Boolean)etc.getLoader().callCustomHook("CuboidPlugin-PermissionCheck", new Object[] {player, block})){
-    				protect = true;
-    			}
-    		}
+		if(Realms != null && Realms.isEnabled()){
+			if(!(Boolean)etc.getLoader().callCustomHook("Realms-PermissionCheck", new Object[] {type, player, block})){
+				protect = true;
+			}
 		}
-		catch(Exception e){
-		    //Custom Hooks Failure...
-		    protect = false;
+		if(Cuboids2 != null && Cuboids2.isEnabled()){
+			if(!(Boolean)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {"CAN_MODIFY", player.getName(), block })){
+				protect = true;
+			}
+		}
+		if(CuboidPlugin != null && CuboidPlugin.isEnabled()){
+			if(!(Boolean)etc.getLoader().callCustomHook("CuboidPlugin-PermissionCheck", new Object[] {player, block})){
+				protect = true;
+			}
 		}
 		return protect;
 	}
@@ -349,30 +343,24 @@ public class CRListener extends PluginListener {
 		Plugin Realms = loader.getPlugin("Realms");
 		Plugin Cuboids2 = loader.getPlugin("Cuboids2");
 		Plugin SafePVP = loader.getPlugin("SafePVP");
-		try{
-		    if(Realms != null && Realms.isEnabled()){
-		        if(!(Boolean)etc.getLoader().callCustomHook("Realms-ZoneFlagCheck", new Object[] {"PVP", player})){
-		            nopvp = true;
-		        }
-		    }
-		    if(Cuboids2 != null && Cuboids2.isEnabled() && !nopvp){
-		        String area = (String)etc.getLoader().callCustomHook("CuboidAPI", new Object[] { "AREA_GET_NAME_LOCAL", player });
-		        if(area != null){
-		            if(!(Boolean)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {"AREA_GET_FLAG", area, player.getWorld(), "allowPvp" })){
-		                nopvp = true;
-		            }
-		        }
-		    }
-		    if(SafePVP != null && SafePVP.isEnabled() && !nopvp){
-		        if(!(Boolean)etc.getLoader().callCustomHook("PVPCheck", new Object[]{player.getName()})){
-		            nopvp = true;
-		        }
-		    }
-		}
-		catch(Exception e){
-		    //Custom Hooks Failure...
-		    nopvp = false;
-		}
+	    if(Realms != null && Realms.isEnabled()){
+	        if(!(Boolean)etc.getLoader().callCustomHook("Realms-ZoneFlagCheck", new Object[] {"PVP", player})){
+	            nopvp = true;
+	        }
+	    }
+	    if(Cuboids2 != null && Cuboids2.isEnabled() && !nopvp){
+	        String area = (String)etc.getLoader().callCustomHook("CuboidAPI", new Object[] { "AREA_GET_NAME_LOCAL", player.getName() });
+	        if(area != null){
+	            if(!(Boolean)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {"AREA_GET_FLAG", area, player.getWorld(), "allowPvp" })){
+	                nopvp = true;
+	            }
+	        }
+	    }
+	    if(SafePVP != null && SafePVP.isEnabled() && !nopvp){
+	        if(!(Boolean)etc.getLoader().callCustomHook("PVPCheck", new Object[]{player.getName()})){
+	            nopvp = true;
+	        }
+	    }
 		return nopvp;
 	}
 	
