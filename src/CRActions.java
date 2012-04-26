@@ -7,11 +7,11 @@ public class CRActions {
 		this.CRD = CRD;
 	}
 	
-	private final String LVLM = "[§bYour §e%s §6LEVEL§b:§2 %s §6XP§b:§2 %s§f]";
-	private final String EXPM = "[§eXP§b to next level:§2 %s§f]";
+	private final String LVLM = "[\u00A7bYour \u00A7e%s \u00A76LEVEL\u00A7b:\u00A72 %s \u00A76XP\u00A7b:\u00A72 %s\u00A7f]";
+	private final String EXPM = "[\u00A7eXP\u00A7b to next level:\u00A72 %s\u00A7f]";
 	
-	private final String LVLT = "[§bYour §eTOTAL §bLEVEL:§2 %s§f]";
-	private final String EXPT = "[§bYour §eTOTAL §bXP:§2 %s§f]";
+	private final String LVLT = "[\u00A7bYour \u00A7eTOTAL \u00A7bLEVEL:\u00A72 %s\u00A7f]";
+	private final String EXPT = "[\u00A7bYour \u00A7eTOTAL \u00A7bXP:\u00A72 %s\u00A7f]";
 	
 	public boolean LevelExpCheck(Player player, String type){
 		int lvl = CRD.getLevel(player.getName(), type);

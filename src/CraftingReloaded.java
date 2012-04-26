@@ -1,7 +1,5 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -10,8 +8,8 @@ public class CraftingReloaded extends Plugin {
 	CRData CRD;
 	CRActions CRA;
 	CRListener CRL;
-	public final String version = "3.0b10";
-	public String CurrVer = "3.0b10";
+	public final String version = "3.0b11";
+	public String CurrVer = "3.0b11";
 	
 	public void disable() {
 		CRD.Disabler();
@@ -44,26 +42,15 @@ public class CraftingReloaded extends Plugin {
 	}
 	
 	public boolean isLatest(){
-		String address = "http://www.visualillusionsent.net/cmod_plugins/Versions.html";
-		URL url = null;
-		try {
-			url = new URL(address);
-		} catch (MalformedURLException e) {
-			return true;
-		}
-		String[] Vpre = new String[1]; 
-		BufferedReader in;
-		try {
-			in = new BufferedReader(new InputStreamReader(url.openStream()));
+	    try {
+	        URL url = new URL("http://visualillusionsent.net/cmod_plugins/versions.php?plugin=CraftingReloaded");
+		    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 			String inputLine;
-			while ((inputLine = in.readLine()) != null) {
-				if (inputLine.contains("CraftingReloaded=")){
-					Vpre = inputLine.split("=");
-					CurrVer = Vpre[1].replace("</p>", "");
-				}
+			if ((inputLine = in.readLine()) != null) {
+				CurrVer = inputLine;
 			}
 			in.close();
-		} catch (IOException e) {
+		} catch (Exception E) {
 			return true;
 		}
 		return (version.equals(CurrVer));

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -128,10 +129,10 @@ public class CRData {
 			makeEXPFile();
 		}
 		if(!BETfile.exists()){
-			makeBETFile();
+			moveFileFromJar(Dir+BETF, "CRBlockEXPTable.txt");
 		}
 		if(!CETfile.exists()){
-			makeCETFile();
+			moveFileFromJar(Dir+CETF, "CRCombatEXPTable.txt");
 		}
 	}
 	
@@ -181,191 +182,23 @@ public class CRData {
 		}
 	}
 	
-	private void makeSettingsFile(){
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(Dir+Set));
-			out.write("#CraftingReloaded Settings File#"); out.newLine();
-			out.write("#Building Block IDs Sperated by a Comma ','"); out.newLine();
-			out.write("BuildBlockIDs=1,4,5,17,18,19,20,22,24,26,30,35,41,42,44,45,47,48,49,53,54,57,64,65,67,71,79,80,85,87,88,89,91,96,98,101,102,103,107,108,109,112,113,114,121"); out.newLine();
-			out.write("#Excavation Block IDs Sperated by a Comma ','"); out.newLine();
-			out.write("ExcBlockIDs=1,2,3,12,13,24,48,78,79,87,88,89,98,121"); out.newLine();
-			out.write("#Farming Block IDs Sperated by a Comma ','"); out.newLine();
-			out.write("FarmBlockIDs=18,31,37,38,39,40,59,83,81,86,99,100,103,104,105,106"); out.newLine();
-			out.write("#Mining Block IDs Sperated by a Comma ','"); out.newLine();
-			out.write("MineBlockIDs=14,15,16,21,73,74"); out.newLine();
-			out.write("#Technician Block IDs Sperated by a Comma ','"); out.newLine();
-			out.write("#Note Some IDs may require to be the actual Item ID (ie: RedStoneRepeater)"); out.newLine();
-			out.write("TechBlockIDs=23,27,28,29,33,55,66,69,70,72,76,77"); out.newLine();
-			out.write("#Woodcutting Block IDs Sperated by a Comma ','"); out.newLine();
-			out.write("WoodBlockIDs=17"); out.newLine();
-			out.write("#Combat Entity Names Sperated by a Comma ',' (for pvp use PVP)"); out.newLine();
-			out.write("CombatEntities=PVP,Chicken,Cow,Pig,Sheep,Squid,Enderman,ZombiePig,Wolf,CaveSpider,Creeper,Ghast,Giant,Silverfish,Skeleton,Slime,Spider,Zombie"); out.newLine();
-			out.write("#Maximum Allowed Level (up to 100)"); out.newLine();
-			out.write("MaxLevel=100"); out.newLine();
-			out.write("#Blocks that require a PickAxe for EXP Gain#"); out.newLine();
-			out.write("RPA=1,4,13,14,15,16,21,24,48,49,56,73,74,87,89,98,112,121"); out.newLine();
-			out.write("#Blocks that require an Axe for EXP Gain#"); out.newLine();
-			out.write("RA=17"); out.newLine();
-			out.write("#Blocks that require a Shovel for EXP Gain#"); out.newLine();
-			out.write("RS=2,3,12,13,82"); out.newLine();
-			out.write("#MySQL Settings#"); out.newLine();
-			out.write("Use-MySQL="+MySQL); out.newLine();
-			out.write("Use-CanaryMySQLConn="+CMySQL); out.newLine();
-			out.write("UserName="+UserName); out.newLine();
-			out.write("Password="+PassWord); out.newLine();
-			out.write("DataBase="+DataBase); out.newLine();
-			out.write("Driver="+Driver); out.newLine();
-			out.write("#Save Delay in Minutes#"); out.newLine();
-			out.write("SaveDelay="+savedelay); out.newLine();
-			out.write("#Bonus Percent Incrimental Rate (in levels)#"); out.newLine();
-			out.write("BPILR="+BPILR); out.newLine();
-			out.write("#Bonuses Start At Level#"); out.newLine();
-			out.write("B1LVL="+B1LVL); out.newLine();
-			out.write("B2LVL="+B2LVL); out.newLine();
-			out.write("B3LVL="+B3LVL); out.newLine();
-			out.write("B4LVL="+B4LVL); out.newLine();
-			out.write("B5LVL="+B5LVL); out.newLine();
-			out.write("#Bonus Starting Percent#"); out.newLine();
-			out.write("B1PS="+B1PS); out.newLine();
-			out.write("B2PS="+B2PS); out.newLine();
-			out.write("B3PS="+B3PS); out.newLine();
-			out.write("B4PS="+B4PS); out.newLine();
-			out.write("B5PS="+B5PS); out.newLine();
-			out.write("#Bonus Percent Increase Incrimenter (amount of extra chance per BPILR)#"); out.newLine();
-			out.write("B1PI="+B1PI); out.newLine();
-			out.write("B2PI="+B2PI); out.newLine();
-			out.write("B3PI="+B3PI); out.newLine();
-			out.write("B4PI="+B4PI); out.newLine();
-			out.write("B5PI="+B5PI); out.newLine();
-			out.close();
+	private void moveFileFromJar(String to, String from){
+	    try {
+	        File targetFile = new File(to);
+		   
+		    InputStream inFile = getClass().getClassLoader().getResourceAsStream(from);
+		    FileWriter outFile = new FileWriter(targetFile);
+		        
+		    int c;
+		    
+		    while ((c = inFile.read()) != -1){
+		        outFile.write(c);
+		    }
+		            
+		    inFile.close();
+		    outFile.close();
 		}catch (IOException e){
-			log.severe("[CraftingReloaded] - Unable to Create Settings File!");
-		}
-	}
-	
-	private void makeCETFile(){
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(Dir+CETF));
-			out.write("#CraftingReloaded Comabat EXP Table File#"); out.newLine();
-			out.write("#Format = MobName=EXP for PVP use PVP=EXP"); out.newLine();
-			out.write("Chicken=1"); out.newLine();
-			out.write("Cow=1"); out.newLine();
-			out.write("Pig=1"); out.newLine();
-			out.write("Sheep=1"); out.newLine();
-			out.write("Squid=1"); out.newLine();
-			out.write("Enderman=2"); out.newLine();
-			out.write("ZombiePig=2"); out.newLine();
-			out.write("Wolf=2"); out.newLine();
-			out.write("CaveSpider=3"); out.newLine();
-			out.write("Creeper=2"); out.newLine();
-			out.write("Ghast=2"); out.newLine();
-			out.write("Giant=3"); out.newLine();
-			out.write("Silverfish=2"); out.newLine();
-			out.write("Skeleton=2"); out.newLine();
-			out.write("Slime=3"); out.newLine();
-			out.write("Spider=2"); out.newLine();
-			out.write("Zombie=2"); out.newLine();
-			out.close();
-		}catch (IOException e){
-			log.severe("[CraftingReloaded] - Unable to Create CombatEXPTable File!");
-		}
-	}
-	
-	private void makeBETFile(){
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(Dir+BETF));
-			out.write("#CraftingReloaded Block EXP Table File#"); out.newLine();
-			out.write("#Format is ID=EXP"); out.newLine();
-			out.write("1=1"); out.newLine();
-			out.write("2=1"); out.newLine();
-			out.write("3=1"); out.newLine();
-			out.write("4=1"); out.newLine();
-			out.write("5=1"); out.newLine();
-			out.write("12=1"); out.newLine();
-			out.write("13=1"); out.newLine();
-			out.write("14=1"); out.newLine();
-			out.write("15=1"); out.newLine();
-			out.write("16=1"); out.newLine();
-			out.write("17=1"); out.newLine();
-			out.write("18=1"); out.newLine();
-			out.write("19=1"); out.newLine();
-			out.write("20=1"); out.newLine();
-			out.write("21=1"); out.newLine();
-			out.write("22=1"); out.newLine();
-			out.write("23=1"); out.newLine();
-			out.write("24=1"); out.newLine();
-			out.write("25=1"); out.newLine();
-			out.write("26=1"); out.newLine();
-			out.write("27=1"); out.newLine();
-			out.write("28=1"); out.newLine();
-			out.write("29=1"); out.newLine();
-			out.write("30=1"); out.newLine();
-			out.write("31=1"); out.newLine();
-			out.write("33=1"); out.newLine();
-			out.write("35=1"); out.newLine();
-			out.write("37=1"); out.newLine();
-			out.write("38=1"); out.newLine();
-			out.write("39=1"); out.newLine();
-			out.write("40=1"); out.newLine();
-			out.write("41=1"); out.newLine();
-			out.write("42=1"); out.newLine();
-			out.write("44=1"); out.newLine();
-			out.write("45=1"); out.newLine();
-			out.write("47=1"); out.newLine();
-			out.write("48=1"); out.newLine();
-			out.write("49=1"); out.newLine();
-			out.write("53=1"); out.newLine();
-			out.write("54=1"); out.newLine();
-			out.write("55=1"); out.newLine();
-			out.write("56=1"); out.newLine();
-			out.write("57=1"); out.newLine();
-			out.write("59=1"); out.newLine();
-			out.write("64=1"); out.newLine();
-			out.write("65=1"); out.newLine();
-			out.write("66=1"); out.newLine();
-			out.write("67=1"); out.newLine();
-			out.write("69=1"); out.newLine();
-			out.write("70=1"); out.newLine();
-			out.write("71=1"); out.newLine();
-			out.write("72=1"); out.newLine();
-			out.write("73=1"); out.newLine();
-			out.write("74=1"); out.newLine();
-			out.write("76=1"); out.newLine();
-			out.write("77=1"); out.newLine();
-			out.write("78=1"); out.newLine();
-			out.write("79=1"); out.newLine();
-			out.write("80=1"); out.newLine();
-			out.write("81=1"); out.newLine();
-			out.write("82=1"); out.newLine();
-			out.write("83=1"); out.newLine();
-			out.write("84=1"); out.newLine();
-			out.write("85=1"); out.newLine();
-			out.write("86=1"); out.newLine();
-			out.write("87=1"); out.newLine();
-			out.write("88=1"); out.newLine();
-			out.write("89=1"); out.newLine();
-			out.write("91=1"); out.newLine();
-			out.write("93=1"); out.newLine();
-			out.write("96=1"); out.newLine();
-			out.write("98=1"); out.newLine();
-			out.write("99=1"); out.newLine();
-			out.write("100=1"); out.newLine();
-			out.write("101=1"); out.newLine();
-			out.write("102=1"); out.newLine();
-			out.write("103=1"); out.newLine();
-			out.write("104=1"); out.newLine();
-			out.write("105=1"); out.newLine();
-			out.write("106=1"); out.newLine();
-			out.write("107=1"); out.newLine();
-			out.write("108=1"); out.newLine();
-			out.write("109=1"); out.newLine();
-			out.write("112=1"); out.newLine();
-			out.write("113=1"); out.newLine();
-			out.write("114=1"); out.newLine();
-			out.write("121=1"); out.newLine();
-			out.close();
-		}catch (IOException e){
-			log.severe("[CraftingReloaded] - Unable to Create BlockEXPTable File!");
+			log.severe("[CraftingReloaded] - Unable to Create "+to+" File!");
 		}
 	}
 	
@@ -622,7 +455,7 @@ public class CRData {
 	private void setSettings(){
 		File setfile = new File(Dir+Set);
 		if(!setfile.exists()){
-			makeSettingsFile();
+			moveFileFromJar(Dir+Set, "CRSettings.ini");
 		}
 		Settings = new PropertiesFile(Dir+Set);
 		try{
@@ -899,7 +732,7 @@ public class CRData {
 			levelxp = getBaseExp(Type, xpcheck);
 			if ((exp >= levelxp) && (lvl < maxlevel)){
 				String level = String.valueOf(xpcheck);
-				player.sendMessage("§6BUILDING §bLEVELED UP! Level:§e "+level);
+				player.sendMessage("\u00A76BUILDING \u00A7bLEVELED UP! Level:\u00A7e "+level);
 				PLXP.BAddLevel(1);
 			}
 			PLXP.BAddXP(expgain);
@@ -911,7 +744,7 @@ public class CRData {
 			levelxp = getBaseExp(Type, xpcheck);
 			if ((exp >= levelxp) && (lvl < maxlevel)){
 				String level = String.valueOf(xpcheck);
-				player.sendMessage("§6COMBAT §bLEVELED UP! Level:§e "+level);
+				player.sendMessage("\u00A76COMBAT \u00A7bLEVELED UP! Level:\u00A7e "+level);
 				PLXP.CAddLevel(1);
 			}
 			PLXP.CAddXP(expgain);
@@ -923,7 +756,7 @@ public class CRData {
 			levelxp = getBaseExp(Type, xpcheck);
 			if ((exp >= levelxp) && (lvl < maxlevel)){
 				String level = String.valueOf(xpcheck);
-				player.sendMessage("§6EXCAVATING §bLEVELED UP! Level:§e "+level);
+				player.sendMessage("\u00A76EXCAVATING \u00A7bLEVELED UP! Level:\u00A7e "+level);
 				PLXP.EAddLevel(1);
 			}
 			PLXP.EAddXP(expgain);
@@ -935,7 +768,7 @@ public class CRData {
 			levelxp = getBaseExp(Type, xpcheck);
 			if ((exp >= levelxp) && (lvl < maxlevel)){
 				String level = String.valueOf(xpcheck);
-				player.sendMessage("§6FARMING §bLEVELED UP! Level:§e "+level);
+				player.sendMessage("\u00A76FARMING \u00A7bLEVELED UP! Level:\u00A7e "+level);
 				PLXP.FAddLevel(1);
 			}
 			PLXP.FAddXP(expgain);
@@ -947,7 +780,7 @@ public class CRData {
 			levelxp = getBaseExp(Type, xpcheck);
 			if ((exp >= levelxp) && (lvl < maxlevel)){
 				String level = String.valueOf(xpcheck);
-				player.sendMessage("§6MINING §bLEVELED UP! Level:§e "+level);
+				player.sendMessage("\u00A76MINING \u00A7bLEVELED UP! Level:\u00A7e "+level);
 				PLXP.MAddLevel(1);
 			}
 			PLXP.MAddXP(expgain);
@@ -959,7 +792,7 @@ public class CRData {
 			levelxp = getBaseExp(Type, xpcheck);
 			if ((exp >= levelxp) && (lvl < maxlevel)){
 				String level = String.valueOf(xpcheck);
-				player.sendMessage("§6TECHNICIAN §bLEVELED UP! Level:§e "+level);
+				player.sendMessage("\u00A76TECHNICIAN \u00A7bLEVELED UP! Level:\u00A7e "+level);
 				PLXP.TAddLevel(1);
 			}
 			PLXP.TAddXP(expgain);
@@ -971,7 +804,7 @@ public class CRData {
 			levelxp = getBaseExp(Type, xpcheck);
 			if ((exp >= levelxp) && (lvl < maxlevel)){
 				String level = String.valueOf(xpcheck);
-				player.sendMessage("§6WOODCUTTING §bLEVELED UP! Level:§e "+level);
+				player.sendMessage("\u00A76WOODCUTTING \u00A7bLEVELED UP! Level:\u00A7e "+level);
 				PLXP.WAddLevel(1);
 			}
 			PLXP.WAddXP(expgain);
@@ -1442,7 +1275,7 @@ public class CRData {
 	}
 	
 	public void SaveAll(){
-		etc.getServer().messageAll("[§5SKILLS§f]§d - Saving all LEVELS and EXPERIENCE!");
+		etc.getServer().messageAll("[\u00A75SKILLS\u00A7f]\u00A7d - Saving all LEVELS and EXPERIENCE!");
 		log.info("[CraftingReloaded] - Saving all LEVELS and EXPERIENCE!");
 		CRPlayerLevelExperience PLXP;
 			if(MySQL){
@@ -1500,7 +1333,7 @@ public class CRData {
 				}
 			}
 		UpdateAntiBlockFarm();
-		etc.getServer().messageAll("[§5SKILLS§f]§d - Save Complete!");
+		etc.getServer().messageAll("[\u00A75SKILLS\u00A7f]\u00A7d - Save Complete!");
 		log.info("[CraftingReloaded] - Save Complete!");
 	}
 	
@@ -1591,12 +1424,14 @@ public class CRData {
 	}
 	
 	public void Disabler(){
-		SaveIt.disable();
-		SaveIt = null;
 		try{
+			SaveIt.disable();
+			SaveIt = null;
 			SaveNow save = new SaveNow();
 			save.start();
 		}catch(NoClassDefFoundError NCDFE){ //For Update Reasons
+			SaveAll();
+		}catch(NullPointerException NPE){
 			SaveAll();
 		}
 	}
@@ -1631,10 +1466,14 @@ public class CRData {
 	}
 	
 	public void SaveItNow(){
-		SaveNow save = new SaveNow();
-		save.start();
-		while(!save.isInterrupted()){
-			continue;
+		try{
+			SaveNow save = new SaveNow();
+			save.start();
+			while(!save.isInterrupted()){
+				continue;
+			}
+		}catch(NoClassDefFoundError NCDFE){ //For Update Reasons
+			SaveAll();
 		}
 	}
 	

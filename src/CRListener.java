@@ -63,20 +63,20 @@ public class CRListener extends PluginListener {
 					}
 				}
 				else{
-					player.sendMessage("§6----[§3CraftingReloaded V"+CR.version+"§6]----");
+					player.sendMessage("\u00A76----[\u00A73CraftingReloaded V"+CR.version+"\u00A76]----");
 					if(player.isAdmin() && !CR.isLatest()){
-						player.sendMessage("§6----[§3There is an update! V"+CR.CurrVer+"§6]----");
+						player.sendMessage("\u00A76----[\u00A73There is an update! V"+CR.CurrVer+"\u00A76]----");
 					}
-					player.sendMessage("§a/skills building§b        - displays §6BUILDING§b level and XP");
-					player.sendMessage("§a/skills combat§b        - displays §6COMBAT§b level and XP");
-					player.sendMessage("§a/skills excavating§b   - displays §6EXCAVATING§b level and XP");
-					player.sendMessage("§a/skills farming§b        - displays §6FARMING§b level and XP");
-					player.sendMessage("§a/skills mining§b          - displays §6MINING§b level");
-					player.sendMessage("§a/skills technician§b    - displays §6TECHNICIAN§b level and XP");
-					player.sendMessage("§a/skills woodcutting§b  - displays §6WOODCUTTING§b level and XP");
-					player.sendMessage("§a/skills all§b              - displays §6ALL§b levels and XP");
-					player.sendMessage("§a/skills total§b           - displays §6TOTAL§b level and XP");
-					player.sendMessage("§aAliases:§e b, c, e, f, m, t, w, a, to");
+					player.sendMessage("\u00A7a/skills building\u00A7b        - displays \u00A76BUILDING\u00A7b level and XP");
+					player.sendMessage("\u00A7a/skills combat\u00A7b        - displays \u00A76COMBAT\u00A7b level and XP");
+					player.sendMessage("\u00A7a/skills excavating\u00A7b   - displays \u00A76EXCAVATING\u00A7b level and XP");
+					player.sendMessage("\u00A7a/skills farming\u00A7b        - displays \u00A76FARMING\u00A7b level and XP");
+					player.sendMessage("\u00A7a/skills mining\u00A7b          - displays \u00A76MINING\u00A7b level");
+					player.sendMessage("\u00A7a/skills technician\u00A7b    - displays \u00A76TECHNICIAN\u00A7b level and XP");
+					player.sendMessage("\u00A7a/skills woodcutting\u00A7b  - displays \u00A76WOODCUTTING\u00A7b level and XP");
+					player.sendMessage("\u00A7a/skills all\u00A7b              - displays \u00A76ALL\u00A7b levels and XP");
+					player.sendMessage("\u00A7a/skills total\u00A7b           - displays \u00A76TOTAL\u00A7b level and XP");
+					player.sendMessage("\u00A7aAliases:\u00A7e b, c, e, f, m, t, w, a, to");
 					return true;
 				}
 			}
@@ -271,20 +271,23 @@ public class CRListener extends PluginListener {
 	}
 	
 	public PluginLoader.HookResult onEntityRightClick(Player player, BaseEntity entity, Item item){
-		if(entity != null && entity.isAnimal()){
-			Block block = player.getWorld().getBlockAt((int)entity.getX(), (int)entity.getY(), (int)entity.getZ());
-			if(!isProtected(player, block, "interact")){
-				Mob mob = new Mob((OEntityLiving)entity.getEntity());
-				if(item.getType() == Item.Type.Wheat){
-					CRD.addExp("F", player, 1);
-				}
-				else if(item.getType() == Item.Type.Bucket){
-					if(mob.getName().equals("Cow")){
-						CRD.addExp("F", player, 1);
-					}
-				}
-			}
-		}
+	    try{
+    		if(entity != null && entity.isAnimal()){
+    			Block block = player.getWorld().getBlockAt((int)entity.getX(), (int)entity.getY(), (int)entity.getZ());
+    			if(!isProtected(player, block, "interact")){
+    				Mob mob = new Mob((OEntityLiving)entity.getEntity());
+    				if(item.getType() == Item.Type.Wheat){
+    					CRD.addExp("F", player, 1);
+    				}
+    				else if(item.getType() == Item.Type.Bucket){
+    					if(mob.getName().equals("Cow")){
+    						CRD.addExp("F", player, 1);
+    					}
+    				}
+    			}
+    		}
+	    }
+	    catch(Exception e){ }
 		return PluginLoader.HookResult.DEFAULT_ACTION;
 	}
 	
@@ -316,20 +319,26 @@ public class CRListener extends PluginListener {
 		Plugin Realms = loader.getPlugin("Realms");
 		Plugin Cuboids2 = loader.getPlugin("Cuboids2");
 		Plugin CuboidPlugin = loader.getPlugin("CuboidPlugin");
-		if(Realms != null && Realms.isEnabled()){
-			if(!(Boolean)etc.getLoader().callCustomHook("Realms-PermissionCheck", new Object[] {type, player, block})){
-				protect = true;
-			}
+		try{
+    		if(Realms != null && Realms.isEnabled()){
+    			if(!(Boolean)etc.getLoader().callCustomHook("Realms-PermissionCheck", new Object[] {type, player, block})){
+    				protect = true;
+    			}
+    		}
+    		if(Cuboids2 != null && Cuboids2.isEnabled()){
+    			if(!(Boolean)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {"CAN_MODIFY", player, block })){
+    				protect = true;
+    			}
+    		}
+    		if(CuboidPlugin != null && CuboidPlugin.isEnabled()){
+    			if(!(Boolean)etc.getLoader().callCustomHook("CuboidPlugin-PermissionCheck", new Object[] {player, block})){
+    				protect = true;
+    			}
+    		}
 		}
-		if(Cuboids2 != null && Cuboids2.isEnabled()){
-			if(!(Boolean)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {player, block, "CAN_MODIFY"})){
-				protect = true;
-			}
-		}
-		if(CuboidPlugin != null && CuboidPlugin.isEnabled()){
-			if(!(Boolean)etc.getLoader().callCustomHook("CuboidPlugin-PermissionCheck", new Object[] {player, block})){
-				protect = true;
-			}
+		catch(Exception e){
+		    //Custom Hooks Failure...
+		    protect = false;
 		}
 		return protect;
 	}
@@ -340,23 +349,29 @@ public class CRListener extends PluginListener {
 		Plugin Realms = loader.getPlugin("Realms");
 		Plugin Cuboids2 = loader.getPlugin("Cuboids2");
 		Plugin SafePVP = loader.getPlugin("SafePVP");
-		if(Realms != null && Realms.isEnabled()){
-			if(!(Boolean)etc.getLoader().callCustomHook("Realms-ZoneFlagCheck", new Object[] {"PVP", player})){
-				nopvp = true;
-			}
+		try{
+		    if(Realms != null && Realms.isEnabled()){
+		        if(!(Boolean)etc.getLoader().callCustomHook("Realms-ZoneFlagCheck", new Object[] {"PVP", player})){
+		            nopvp = true;
+		        }
+		    }
+		    if(Cuboids2 != null && Cuboids2.isEnabled() && !nopvp){
+		        String area = (String)etc.getLoader().callCustomHook("CuboidAPI", new Object[] { "AREA_GET_NAME_LOCAL", player });
+		        if(area != null){
+		            if(!(Boolean)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {"AREA_GET_FLAG", area, player.getWorld(), "allowPvp" })){
+		                nopvp = true;
+		            }
+		        }
+		    }
+		    if(SafePVP != null && SafePVP.isEnabled() && !nopvp){
+		        if(!(Boolean)etc.getLoader().callCustomHook("PVPCheck", new Object[]{player.getName()})){
+		            nopvp = true;
+		        }
+		    }
 		}
-		if(Cuboids2 != null && Cuboids2.isEnabled() && !nopvp){
-			String area = (String)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {player, "AREA_GET_NAME"});
-			if(area != null){
-				if(!(Boolean)etc.getLoader().callCustomHook("CuboidAPI", new Object[] {area, player.getWorld(), "allowPvp", "AREA_GET_FLAG"})){
-					nopvp = true;
-				}
-			}
-		}
-		if(SafePVP != null && SafePVP.isEnabled() && !nopvp){
-			if(!(Boolean)etc.getLoader().callCustomHook("PVPCheck", new Object[]{player.getName()})){
-				nopvp = true;
-			}
+		catch(Exception e){
+		    //Custom Hooks Failure...
+		    nopvp = false;
 		}
 		return nopvp;
 	}
